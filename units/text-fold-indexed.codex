@@ -1,0 +1,243 @@
+Chapter: ListUtils
+
+ We say:
+
+Section: Construction
+  list-zeros : Integer -> List Integer
+  list-zeros (n) = list-zeros-loop n 0 []
+
+  list-zeros-loop : Integer, Integer, List Integer -> List Integer
+  list-zeros-loop (n) (i) (acc) =
+    if i >= n then acc
+    else list-zeros-loop n (i + 1) (list-push acc 0)
+
+Section: Slicing
+  list-tail : List a -> List a
+  list-tail (xs) = list-tail-loop xs 1 (list-length xs) []
+
+  list-tail-loop : List a, Integer, Integer, List a -> List a
+  list-tail-loop (xs) (i) (len) (acc) =
+    if i >= len then acc
+    else list-tail-loop xs (i + 1) len (list-push acc (list-at xs i))
+
+Section: Slicing (extended)
+
+  list-take : List a, Integer -> List a
+  list-take (xs) (n) = list-take-loop xs 0 (if n > list-length xs then list-length xs else n) []
+
+  list-take-loop : List a, Integer, Integer, List a -> List a
+  list-take-loop (xs) (i) (n) (acc) =
+    if i >= n then acc
+    else list-take-loop xs (i + 1) n (list-push acc (list-at xs i))
+
+  list-drop : List a, Integer -> List a
+  list-drop (xs) (n) = list-tail-loop xs (if n > list-length xs then list-length xs else n) (list-length xs) []
+
+Section: Map and Fold
+
+  list-map : (a -> [e] b), List a -> [e] List b
+  list-map (f) (xs) = map-list f xs
+
+  map-list : (a -> [e] b), List a -> [e] List b
+  map-list (f) (xs) =
+   map-list-loop f xs 0 (list-length xs) []
+
+  map-list-loop : (a -> [e] b), List a, Integer, Integer, List b -> [e] List b
+  map-list-loop (f) (xs) (i) (len) (acc) =
+   if i == len then acc
+   else map-list-loop f xs (i + 1) len (list-push acc (f (list-at xs i)))
+
+  fold-list : (b, a -> [e] b), b, List a -> [e] b
+  fold-list (f) (z) (xs) =
+   fold-list-loop f z xs 0 (list-length xs)
+
+  fold-list-loop : (b, a -> [e] b), b, List a, Integer, Integer -> [e] b
+  fold-list-loop (f) (z) (xs) (i) (len) =
+   if i == len then z
+   else fold-list-loop f (f z (list-at xs i)) xs (i + 1) len
+
+Section: Filter and Search
+
+  list-filter : List a, (a -> [e] Boolean) -> [e] List a
+  list-filter (xs) (pred) =
+    list-filter-loop xs pred 0 (list-length xs) []
+
+  list-filter-loop : List a, (a -> [e] Boolean), Integer, Integer, List a -> [e] List a
+  list-filter-loop (xs) (pred) (i) (len) (acc) =
+    if i >= len then acc
+    else let x = list-at xs i
+    in if pred x then list-filter-loop xs pred (i + 1) len (list-push acc x)
+    else list-filter-loop xs pred (i + 1) len acc
+
+  list-contains : List a, (a -> Boolean) -> Boolean
+  list-contains (xs) (pred) =
+    list-contains-loop xs pred 0 (list-length xs)
+
+  list-contains-loop : List a, (a -> Boolean), Integer, Integer -> Boolean
+  list-contains-loop (xs) (pred) (i) (len) =
+    if i >= len then False
+    else if pred (list-at xs i) then True
+    else list-contains-loop xs pred (i + 1) len
+
+  list-remove : List a, (a -> Boolean) -> List a
+  list-remove (xs) (pred) =
+    list-remove-loop xs pred 0 (list-length xs) [] False
+
+  list-remove-loop : List a, (a -> Boolean), Integer, Integer, List a, Boolean -> List a
+  list-remove-loop (xs) (pred) (i) (len) (acc) (found) =
+    if i >= len then acc
+    else let x = list-at xs i
+    in if found then list-remove-loop xs pred (i + 1) len (list-push acc x) True
+    else if pred x then list-remove-loop xs pred (i + 1) len acc True
+    else list-remove-loop xs pred (i + 1) len (list-push acc x) False
+
+Page 1
+
+Chapter: Tuple
+
+Section: Definitions
+
+  Tup2 (a) (b) =
+    | MkTup2 (a) (b)
+
+  Tup3 (a) (b) (c) =
+    | MkTup3 (a) (b) (c)
+
+  Tup4 (a) (b) (c) (d) =
+    | MkTup4 (a) (b) (c) (d)
+
+  Tup5 (a) (b) (c) (d) (e) =
+    | MkTup5 (a) (b) (c) (d) (e)
+
+  pair-first : (a, b) -> a
+  pair-first (p) =
+   let (x, y) = p in x
+
+  pair-second : (a, b) -> b
+  pair-second (p) =
+   let (x, y) = p in y
+
+Page 1
+
+Chapter: TextScan
+
+ We say:
+
+Section: Core Fold
+
+  text-fold-indexed : Text, b, (b, Char, Integer -> b) -> b
+  text-fold-indexed (s) (init) (f) =
+    text-fold-indexed-loop s init f 0 (text-length s)
+
+  text-fold-indexed-loop : Text, b, (b, Char, Integer -> b), Integer, Integer -> b
+  text-fold-indexed-loop (s) (acc) (f) (i) (len) =
+    if i >= len then acc
+    else text-fold-indexed-loop s (f acc (char-at s i) i) f (i + 1) len
+
+  text-fold-back : Text, b, (b, Char, Integer -> b) -> b
+  text-fold-back (s) (init) (f) =
+    text-fold-back-loop s init f (text-length s - 1)
+
+  text-fold-back-loop : Text, b, (b, Char, Integer -> b), Integer -> b
+  text-fold-back-loop (s) (acc) (f) (i) =
+    if i < 0 then acc
+    else text-fold-back-loop s (f acc (char-at s i) i) f (i - 1)
+
+Section: Character Operations
+
+  text-map-chars : Text, (Char -> Char) -> Text
+  text-map-chars (s) (f) =
+    text-map-chars-loop s f 0 (text-length s) ""
+
+  text-map-chars-loop : Text, (Char -> Char), Integer, Integer, Text -> Text
+  text-map-chars-loop (s) (f) (i) (len) (acc) =
+    if i >= len then acc
+    else text-map-chars-loop s f (i + 1) len (acc & char-to-text (f (char-at s i)))
+
+  text-find-char : Text, (Char -> Boolean) -> Integer
+  text-find-char (s) (pred) =
+    text-find-char-from s pred 0
+
+  text-find-char-from : Text, (Char -> Boolean), Integer -> Integer
+  text-find-char-from (s) (pred) (start) =
+    text-find-char-loop s pred start (text-length s)
+
+  text-find-char-loop : Text, (Char -> Boolean), Integer, Integer -> Integer
+  text-find-char-loop (s) (pred) (i) (len) =
+    if i >= len then -1
+    else if pred (char-at s i) then i
+    else text-find-char-loop s pred (i + 1) len
+
+Section: Matching
+
+  text-match-at : Text, Text, Integer -> Boolean
+  text-match-at (haystack) (needle) (offset) =
+    let nlen = text-length needle
+    in if offset + nlen > text-length haystack then False
+    else text-match-at-loop haystack needle offset 0 nlen
+
+  text-match-at-loop : Text, Text, Integer, Integer, Integer -> Boolean
+  text-match-at-loop (haystack) (needle) (offset) (i) (nlen) =
+    if i >= nlen then True
+    else if char-at haystack (offset + i) /= char-at needle i then False
+    else text-match-at-loop haystack needle offset (i + 1) nlen
+
+Section: Repeat and Pad
+
+  text-repeat : Text, Integer -> Text
+  text-repeat (s) (n) =
+    text-repeat-loop s n 0 ""
+
+  text-repeat-loop : Text, Integer, Integer, Text -> Text
+  text-repeat-loop (s) (n) (i) (acc) =
+    if i >= n then acc
+    else text-repeat-loop s n (i + 1) (acc & s)
+
+  text-pad-left-char : Text, Integer, Char -> Text
+  text-pad-left-char (s) (width) (pad-char) =
+    let slen = text-length s
+    in if slen >= width then s
+    else text-repeat (char-to-text pad-char) (width - slen) & s
+
+Page 1
+
+Chapter: Console
+
+ We say:
+
+Section: Definitions
+
+  effect Console where
+    print-line-uni : Text -> [Console.Write] Nothing
+    read-line  : [Console.Read] Text
+
+Page 1
+
+Chapter: TextFoldIndexed
+  cites Foreword chapter TextScan
+  cites Foreword chapter Console
+
+Section: Body
+  count-vowels : Text -> Integer
+  count-vowels (s) = text-fold-indexed s 0 (\acc ch idx ->
+    if ch == 'a' then acc + 1
+    else if ch == 'e' then acc + 1
+    else if ch == 'i' then acc + 1
+    else if ch == 'o' then acc + 1
+    else if ch == 'u' then acc + 1
+    else acc)
+
+  opening : [Console] Nothing = act
+    let r1 = text-fold-indexed "abc" 0 (\acc ch idx -> acc + idx)
+    in let r2 = text-fold-indexed "hello" "" (\acc ch idx -> acc & integer-to-text idx)
+    in let r3 = count-vowels "hello world"
+    in let r4 = text-fold-indexed "test" 0 (\acc ch idx -> acc + 1)
+    in act
+      print-line-uni (show r1)
+      print-line-uni r2
+      print-line-uni (show r3)
+      print-line-uni (show r4)
+    end
+  end
+
+Page 1

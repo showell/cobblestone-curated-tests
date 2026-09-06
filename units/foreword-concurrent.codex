@@ -1,0 +1,264 @@
+Chapter: ListUtils
+
+ We say:
+
+Section: Construction
+  list-zeros : Integer -> List Integer
+  list-zeros (n) = list-zeros-loop n 0 []
+
+  list-zeros-loop : Integer, Integer, List Integer -> List Integer
+  list-zeros-loop (n) (i) (acc) =
+    if i >= n then acc
+    else list-zeros-loop n (i + 1) (list-push acc 0)
+
+Section: Slicing
+  list-tail : List a -> List a
+  list-tail (xs) = list-tail-loop xs 1 (list-length xs) []
+
+  list-tail-loop : List a, Integer, Integer, List a -> List a
+  list-tail-loop (xs) (i) (len) (acc) =
+    if i >= len then acc
+    else list-tail-loop xs (i + 1) len (list-push acc (list-at xs i))
+
+Section: Slicing (extended)
+
+  list-take : List a, Integer -> List a
+  list-take (xs) (n) = list-take-loop xs 0 (if n > list-length xs then list-length xs else n) []
+
+  list-take-loop : List a, Integer, Integer, List a -> List a
+  list-take-loop (xs) (i) (n) (acc) =
+    if i >= n then acc
+    else list-take-loop xs (i + 1) n (list-push acc (list-at xs i))
+
+  list-drop : List a, Integer -> List a
+  list-drop (xs) (n) = list-tail-loop xs (if n > list-length xs then list-length xs else n) (list-length xs) []
+
+Section: Map and Fold
+
+  list-map : (a -> [e] b), List a -> [e] List b
+  list-map (f) (xs) = map-list f xs
+
+  map-list : (a -> [e] b), List a -> [e] List b
+  map-list (f) (xs) =
+   map-list-loop f xs 0 (list-length xs) []
+
+  map-list-loop : (a -> [e] b), List a, Integer, Integer, List b -> [e] List b
+  map-list-loop (f) (xs) (i) (len) (acc) =
+   if i == len then acc
+   else map-list-loop f xs (i + 1) len (list-push acc (f (list-at xs i)))
+
+  fold-list : (b, a -> [e] b), b, List a -> [e] b
+  fold-list (f) (z) (xs) =
+   fold-list-loop f z xs 0 (list-length xs)
+
+  fold-list-loop : (b, a -> [e] b), b, List a, Integer, Integer -> [e] b
+  fold-list-loop (f) (z) (xs) (i) (len) =
+   if i == len then z
+   else fold-list-loop f (f z (list-at xs i)) xs (i + 1) len
+
+Section: Filter and Search
+
+  list-filter : List a, (a -> [e] Boolean) -> [e] List a
+  list-filter (xs) (pred) =
+    list-filter-loop xs pred 0 (list-length xs) []
+
+  list-filter-loop : List a, (a -> [e] Boolean), Integer, Integer, List a -> [e] List a
+  list-filter-loop (xs) (pred) (i) (len) (acc) =
+    if i >= len then acc
+    else let x = list-at xs i
+    in if pred x then list-filter-loop xs pred (i + 1) len (list-push acc x)
+    else list-filter-loop xs pred (i + 1) len acc
+
+  list-contains : List a, (a -> Boolean) -> Boolean
+  list-contains (xs) (pred) =
+    list-contains-loop xs pred 0 (list-length xs)
+
+  list-contains-loop : List a, (a -> Boolean), Integer, Integer -> Boolean
+  list-contains-loop (xs) (pred) (i) (len) =
+    if i >= len then False
+    else if pred (list-at xs i) then True
+    else list-contains-loop xs pred (i + 1) len
+
+  list-remove : List a, (a -> Boolean) -> List a
+  list-remove (xs) (pred) =
+    list-remove-loop xs pred 0 (list-length xs) [] False
+
+  list-remove-loop : List a, (a -> Boolean), Integer, Integer, List a, Boolean -> List a
+  list-remove-loop (xs) (pred) (i) (len) (acc) (found) =
+    if i >= len then acc
+    else let x = list-at xs i
+    in if found then list-remove-loop xs pred (i + 1) len (list-push acc x) True
+    else if pred x then list-remove-loop xs pred (i + 1) len acc True
+    else list-remove-loop xs pred (i + 1) len (list-push acc x) False
+
+Page 1
+
+Chapter: Tuple
+
+Section: Definitions
+
+  Tup2 (a) (b) =
+    | MkTup2 (a) (b)
+
+  Tup3 (a) (b) (c) =
+    | MkTup3 (a) (b) (c)
+
+  Tup4 (a) (b) (c) (d) =
+    | MkTup4 (a) (b) (c) (d)
+
+  Tup5 (a) (b) (c) (d) (e) =
+    | MkTup5 (a) (b) (c) (d) (e)
+
+  pair-first : (a, b) -> a
+  pair-first (p) =
+   let (x, y) = p in x
+
+  pair-second : (a, b) -> b
+  pair-second (p) =
+   let (x, y) = p in y
+
+Page 1
+
+Chapter: Maybe
+
+ We say:
+
+Section: Definitions
+
+  Maybe (a) =
+    | Just (a)
+    | None
+
+  from-maybe : Maybe a, a -> a
+  from-maybe (m) (default) = when m
+    is Just (x) -> x
+    is None -> default
+
+  is-just : Maybe a -> Boolean
+  is-just (m) = when m
+    is Just (x) -> True
+    is None -> False
+
+  is-none : Maybe a -> Boolean
+  is-none (m) = when m
+    is Just (x) -> False
+    is None -> True
+
+  maybe-map : (a -> b), Maybe a -> Maybe b
+  maybe-map (f) (m) = when m
+    is Just (x) -> Just (f x)
+    is None -> None
+
+  maybe-bind : Maybe a, (a -> Maybe b) -> Maybe b
+  maybe-bind (m) (f) = when m
+    is Just (x) -> f x
+    is None -> None
+
+Page 1
+
+Chapter: Concurrent
+
+  cites Foreword chapter Maybe
+
+ We say:
+
+Section: Task Type
+
+  Task a = record {
+
+    value : a
+  }
+
+Section: Sequential Primitives
+
+  seq-fork : a -> Task a
+  seq-fork (result) = Task { value = result }
+
+  seq-await : Task a -> a
+  seq-await (t) = t.value
+
+Section: Parallel Map
+
+  par-map : (a -> b), List a -> List b
+  par-map (f) (xs) =
+    let tasks = par-fork-all f xs 0 (list-length xs) []
+    in par-await-all tasks 0 (list-length tasks) []
+
+  par-fork-all : (a -> b), List a, Integer, Integer, List (Task b) -> List (Task b)
+  par-fork-all (f) (xs) (i) (len) (acc) =
+    if i == len then acc
+    else par-fork-all f xs (i + 1) len (list-push acc (fork (\u -> f (list-at xs i))))
+
+  par-await-all : List (Task a), Integer, Integer, List a -> List a
+  par-await-all (tasks) (i) (len) (acc) =
+    if i == len then acc
+    else par-await-all tasks (i + 1) len (list-push acc (await (list-at tasks i)))
+
+Section: Race (First to Finish)
+
+  race : List (Integer -> a) -> Maybe a
+  race (thunks) =
+    if list-length thunks == 0 then None
+    else let f = list-at thunks 0
+    in Just (f 0)
+
+Section: Parallel Reduce
+
+  par-reduce : (a, a -> a), a, List a -> a
+  par-reduce (f) (zero) (xs) =
+    if list-length xs == 0 then zero
+    else if list-length xs == 1 then list-at xs 0
+    else let mid = list-length xs / 2
+    in let tl = fork (\u -> par-reduce f zero (par-take xs mid))
+    in let tr = fork (\u -> par-reduce f zero (par-drop xs mid))
+    in f (await tl) (await tr)
+
+  par-take : List a, Integer -> List a
+  par-take (xs) (n) = par-take-loop xs 0 n []
+
+  par-take-loop : List a, Integer, Integer, List a -> List a
+  par-take-loop (xs) (i) (n) (acc) =
+    if i >= n then acc
+    else par-take-loop xs (i + 1) n (list-push acc (list-at xs i))
+
+  par-drop : List a, Integer -> List a
+  par-drop (xs) (n) = par-take-loop xs n (list-length xs) []
+
+Section: Pipeline
+
+  par-pipeline : (a -> b), (b -> c), List a -> List c
+  par-pipeline (f) (g) (xs) = par-map g (par-map f xs)
+
+Section: Parallel Filter
+
+  par-filter : (a -> Boolean), List a -> List a
+  par-filter (pred) (xs) = par-filter-loop pred xs 0 (list-length xs) []
+
+  par-filter-loop : (a -> Boolean), List a, Integer, Integer, List a -> List a
+  par-filter-loop (pred) (xs) (i) (len) (acc) =
+    if i == len then acc
+    else let x = list-at xs i
+    in if pred x then par-filter-loop pred xs (i + 1) len (list-push acc x)
+    else par-filter-loop pred xs (i + 1) len acc
+
+Section: Parallel Zip
+
+  par-zip-with : (a, b -> c), List a, List b -> List c
+  par-zip-with (f) (as) (bs) =
+    let len = if list-length as < list-length bs then list-length as else list-length bs
+    in par-zip-loop f as bs 0 len []
+
+  par-zip-loop : (a, b -> c), List a, List b, Integer, Integer, List c -> List c
+  par-zip-loop (f) (as) (bs) (i) (len) (acc) =
+    if i == len then acc
+    else par-zip-loop f as bs (i + 1) len (list-push acc (f (list-at as i) (list-at bs i)))
+
+Page 1
+
+Chapter: FwdConcurrentTest
+  cites Foreword chapter Concurrent
+
+Section: Entry
+  opening : [Console] Nothing = act
+    print-line-uni "Foreword/Concurrent OK"
+  end

@@ -1,0 +1,33 @@
+Every unit here was RESOLVED from a Cobblestone checkout and frozen. Nothing in
+this repository cites anything; each .codex is self-contained.
+
+checkout   /home/steve/showell_repos/cobblestone-addrfix
+branch     u56-candidate-sunday
+commit     1cc247ae10dcb03d47b2265d1739800cda3d0d15
+resolved   2026-09-06T20:06:02Z by rust-codex-compiler ladder/curate.py
+
+HOW THESE 28 WERE CHOSEN, from the corpus's 1,727 programs:
+
+  1727  every codex/test/**/*.codex
+  1719  cites all resolve (cite_resolve.py)
+  1028  produces output under codexrun
+   937  and has an upstream .expected beside it
+   300  the fastest of those, by codexrun wall time
+   298  codexir compiles it and emits a chapter
+   231  codexzig -> zig build-exe -> run reproduces .expected BYTE FOR BYTE
+    28  15 covering every language form in the pool, plus 13 for redundancy
+
+The .expected files are UPSTREAM'S, copied unchanged. They are never
+regenerated from any compiler of ours; that would bake our bugs into the
+oracle. Re-syncing later is a diff against the commit named above.
+
+WHAT THIS SET IS THIN ON, measured and stated rather than discovered later.
+Selecting the fastest 300 selected for simplicity, so among all 231 eligible
+programs only 1 uses char, 2 declare a sum type, 2 a constructed type and 3 a
+lambda. Those forms are present here but barely. Widening the pool past the
+fast tail is the fix when it matters.
+
+WHAT FREEZING THE UNIT COSTS. The citing mechanism itself is no longer
+exercised -- quire-map, Resolve-PlugForewords, the foreword chapters. The
+original five-line drivers stay in the corpus and can be run against a checkout
+when that is what is under test.

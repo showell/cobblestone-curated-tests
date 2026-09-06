@@ -1,0 +1,255 @@
+Chapter: ListUtils
+
+ We say:
+
+Section: Construction
+  list-zeros : Integer -> List Integer
+  list-zeros (n) = list-zeros-loop n 0 []
+
+  list-zeros-loop : Integer, Integer, List Integer -> List Integer
+  list-zeros-loop (n) (i) (acc) =
+    if i >= n then acc
+    else list-zeros-loop n (i + 1) (list-push acc 0)
+
+Section: Slicing
+  list-tail : List a -> List a
+  list-tail (xs) = list-tail-loop xs 1 (list-length xs) []
+
+  list-tail-loop : List a, Integer, Integer, List a -> List a
+  list-tail-loop (xs) (i) (len) (acc) =
+    if i >= len then acc
+    else list-tail-loop xs (i + 1) len (list-push acc (list-at xs i))
+
+Section: Slicing (extended)
+
+  list-take : List a, Integer -> List a
+  list-take (xs) (n) = list-take-loop xs 0 (if n > list-length xs then list-length xs else n) []
+
+  list-take-loop : List a, Integer, Integer, List a -> List a
+  list-take-loop (xs) (i) (n) (acc) =
+    if i >= n then acc
+    else list-take-loop xs (i + 1) n (list-push acc (list-at xs i))
+
+  list-drop : List a, Integer -> List a
+  list-drop (xs) (n) = list-tail-loop xs (if n > list-length xs then list-length xs else n) (list-length xs) []
+
+Section: Map and Fold
+
+  list-map : (a -> [e] b), List a -> [e] List b
+  list-map (f) (xs) = map-list f xs
+
+  map-list : (a -> [e] b), List a -> [e] List b
+  map-list (f) (xs) =
+   map-list-loop f xs 0 (list-length xs) []
+
+  map-list-loop : (a -> [e] b), List a, Integer, Integer, List b -> [e] List b
+  map-list-loop (f) (xs) (i) (len) (acc) =
+   if i == len then acc
+   else map-list-loop f xs (i + 1) len (list-push acc (f (list-at xs i)))
+
+  fold-list : (b, a -> [e] b), b, List a -> [e] b
+  fold-list (f) (z) (xs) =
+   fold-list-loop f z xs 0 (list-length xs)
+
+  fold-list-loop : (b, a -> [e] b), b, List a, Integer, Integer -> [e] b
+  fold-list-loop (f) (z) (xs) (i) (len) =
+   if i == len then z
+   else fold-list-loop f (f z (list-at xs i)) xs (i + 1) len
+
+Section: Filter and Search
+
+  list-filter : List a, (a -> [e] Boolean) -> [e] List a
+  list-filter (xs) (pred) =
+    list-filter-loop xs pred 0 (list-length xs) []
+
+  list-filter-loop : List a, (a -> [e] Boolean), Integer, Integer, List a -> [e] List a
+  list-filter-loop (xs) (pred) (i) (len) (acc) =
+    if i >= len then acc
+    else let x = list-at xs i
+    in if pred x then list-filter-loop xs pred (i + 1) len (list-push acc x)
+    else list-filter-loop xs pred (i + 1) len acc
+
+  list-contains : List a, (a -> Boolean) -> Boolean
+  list-contains (xs) (pred) =
+    list-contains-loop xs pred 0 (list-length xs)
+
+  list-contains-loop : List a, (a -> Boolean), Integer, Integer -> Boolean
+  list-contains-loop (xs) (pred) (i) (len) =
+    if i >= len then False
+    else if pred (list-at xs i) then True
+    else list-contains-loop xs pred (i + 1) len
+
+  list-remove : List a, (a -> Boolean) -> List a
+  list-remove (xs) (pred) =
+    list-remove-loop xs pred 0 (list-length xs) [] False
+
+  list-remove-loop : List a, (a -> Boolean), Integer, Integer, List a, Boolean -> List a
+  list-remove-loop (xs) (pred) (i) (len) (acc) (found) =
+    if i >= len then acc
+    else let x = list-at xs i
+    in if found then list-remove-loop xs pred (i + 1) len (list-push acc x) True
+    else if pred x then list-remove-loop xs pred (i + 1) len acc True
+    else list-remove-loop xs pred (i + 1) len (list-push acc x) False
+
+Page 1
+
+Chapter: Tuple
+
+Section: Definitions
+
+  Tup2 (a) (b) =
+    | MkTup2 (a) (b)
+
+  Tup3 (a) (b) (c) =
+    | MkTup3 (a) (b) (c)
+
+  Tup4 (a) (b) (c) (d) =
+    | MkTup4 (a) (b) (c) (d)
+
+  Tup5 (a) (b) (c) (d) (e) =
+    | MkTup5 (a) (b) (c) (d) (e)
+
+  pair-first : (a, b) -> a
+  pair-first (p) =
+   let (x, y) = p in x
+
+  pair-second : (a, b) -> b
+  pair-second (p) =
+   let (x, y) = p in y
+
+Page 1
+
+Chapter: Cordic
+
+ CORDIC (COordinate Rotation DIgital Computer) iterative algorithm
+ for computing trig functions and sqrt using only shifts and adds.
+ Perfect for bare-metal integer hardware. Fixed-point scale 1000.
+
+ ACCURACY, MEASURED RATHER THAN CLAIMED. Worst absolute error over a full turn
+ is 6 in 1000, 0.6 per cent of full scale. The SAME measurement read as a
+ relative error is 3.7 per cent, because near a zero crossing a small absolute
+ error is a large fraction of a small value, and near a peak the reverse, so
+ an accuracy figure for this chapter means nothing without saying which of the
+ two it is. This line said "16 iterations gives ~0.1% accuracy" and named
+ neither. codex/test/forewords/math-cordic-accuracy pins the absolute one
+ against real sine and cosine.
+
+ SIXTEEN ITERATIONS IS ELEVEN, MEASURED. The angle table's last six entries are
+ zero: at scale 1000, atan(2^-k) in milliradians rounds to zero from k = 10 on,
+ so those iterations retire no angle. They can still move a coordinate, because
+ the un-normalised x and y grow toward 1000 / 0.607 = 1647 before the gain
+ multiply, and 1647 / 2^10 is 1: compiled with cordic-iterations at 10, the
+ accuracy sample above differs on 10 of its 20 rows; at 11 it is byte-identical
+ to 16. So iterations 11 through 15 are no-ops, and what bounds the result is
+ the fixed-point scale, not the iteration count; raising cordic-iterations
+ alone buys nothing.
+
+ We say:
+
+Section: Constants
+  cordic-scale : Integer = 1000
+  cordic-iterations : Integer = 16
+  cordic-gain : Integer = 607
+  cordic-half-pi : Integer = 1571
+  cordic-pi : Integer = 3142
+  cordic-three-half-pi : Integer = 4712
+  cordic-two-pi : Integer = 6283
+
+Section: Angle Table
+  cordic-atan-table : List Integer
+  cordic-atan-table = [785, 463, 244, 124, 62, 31, 15, 7, 3, 1, 0, 0, 0, 0, 0, 0]
+
+Section: Rotation Mode (cos/sin)
+  CordicResult = record {
+    cos-val : Integer,
+    sin-val : Integer
+  }
+
+ The angle table above sums to 1735 milliradians, and the rotation cannot
+ retire a target larger than that, so nothing outside [0, 1735] converges.
+
+  cordic-sincos : Integer -> CordicResult
+  cordic-sincos (angle-milli) =
+    let a = cordic-normalize angle-milli
+    in if a <= cordic-half-pi then cordic-rotate a cordic-scale 0 0
+    else if a <= cordic-pi then let q = cordic-rotate (cordic-pi - a) cordic-scale 0 0
+    in CordicResult { cos-val = 0 - q.cos-val, sin-val = q.sin-val }
+    else if a <= cordic-three-half-pi then let q = cordic-rotate (a - cordic-pi) cordic-scale 0 0
+    in CordicResult { cos-val = 0 - q.cos-val, sin-val = 0 - q.sin-val }
+    else let q = cordic-rotate (cordic-two-pi - a) cordic-scale 0 0
+    in CordicResult { cos-val = q.cos-val, sin-val = 0 - q.sin-val }
+
+  cordic-normalize : Integer -> Integer
+  cordic-normalize (a) =
+    let full = 6283
+    in let a2 = a - (a / full) * full
+    in if a2 < 0 then a2 + full else a2
+
+  cordic-rotate : Integer, Integer, Integer, Integer -> CordicResult
+  cordic-rotate (target) (x) (y) (i) =
+    if i >= cordic-iterations then CordicResult { cos-val = x * cordic-gain / cordic-scale, sin-val = y * cordic-gain / cordic-scale }
+    else let atan-i = list-at cordic-atan-table i
+    in if target > 0 then cordic-rotate (target - atan-i) (x - (y / (bit-shl 1 i))) (y + (x / (bit-shl 1 i))) (i + 1)
+    else cordic-rotate (target + atan-i) (x + (y / (bit-shl 1 i))) (y - (x / (bit-shl 1 i))) (i + 1)
+
+Section: Individual Functions
+  cordic-cos : Integer -> Integer
+  cordic-cos (angle) = (cordic-sincos angle).cos-val
+
+  cordic-sin : Integer -> Integer
+  cordic-sin (angle) = (cordic-sincos angle).sin-val
+
+  cordic-tan : Integer -> Integer
+  cordic-tan (angle) =
+    let sc = cordic-sincos angle
+    in if sc.cos-val == 0 then 999999
+    else sc.sin-val * cordic-scale / sc.cos-val
+
+Section: Vectoring Mode (atan2, magnitude)
+  CordicVector = record {
+    angle : Integer,
+    magnitude : Integer
+  }
+
+  cordic-atan2 : Integer, Integer -> CordicVector
+  cordic-atan2 (y) (x) =
+    let ax = if x < 0 then -x else x
+    in let ay = if y < 0 then -y else y
+    in let raw = cordic-vector ax ay 0 0
+    in let mag = raw.magnitude * cordic-gain / cordic-scale
+    in let angle = cordic-adjust-quadrant (raw.angle) x y
+    in CordicVector { angle = angle, magnitude = mag }
+
+  cordic-vector : Integer, Integer, Integer, Integer -> CordicVector
+  cordic-vector (x) (y) (angle) (i) =
+    if i >= cordic-iterations then CordicVector { angle = angle, magnitude = x }
+    else let atan-i = list-at cordic-atan-table i
+    in if y > 0 then cordic-vector (x + (y / (bit-shl 1 i))) (y - (x / (bit-shl 1 i))) (angle + atan-i) (i + 1)
+    else cordic-vector (x - (y / (bit-shl 1 i))) (y + (x / (bit-shl 1 i))) (angle - atan-i) (i + 1)
+
+  cordic-adjust-quadrant : Integer, Integer, Integer -> Integer
+  cordic-adjust-quadrant (angle) (x) (y) =
+    if x >= 0 then if y >= 0 then angle else -angle
+    else if y >= 0 then 3141 - angle else angle - 3141
+
+Section: Square Root
+  cordic-sqrt : Integer -> Integer
+  cordic-sqrt (n) =
+    if n <= 0 then 0
+    else cordic-sqrt-loop n (n / 2 + 1)
+
+  cordic-sqrt-loop : Integer, Integer -> Integer
+  cordic-sqrt-loop (n) (guess) =
+    let next = (guess + n / guess) / 2
+    in if next >= guess then guess
+    else cordic-sqrt-loop n next
+
+Page 1
+
+Chapter: FwdCordicTest
+  cites Math chapter Cordic
+
+Section: Entry
+  opening : [Console] Nothing = act
+    print-line-uni "Math/Cordic OK"
+  end

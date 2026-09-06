@@ -1,0 +1,207 @@
+Chapter: ListUtils
+
+ We say:
+
+Section: Construction
+  list-zeros : Integer -> List Integer
+  list-zeros (n) = list-zeros-loop n 0 []
+
+  list-zeros-loop : Integer, Integer, List Integer -> List Integer
+  list-zeros-loop (n) (i) (acc) =
+    if i >= n then acc
+    else list-zeros-loop n (i + 1) (list-push acc 0)
+
+Section: Slicing
+  list-tail : List a -> List a
+  list-tail (xs) = list-tail-loop xs 1 (list-length xs) []
+
+  list-tail-loop : List a, Integer, Integer, List a -> List a
+  list-tail-loop (xs) (i) (len) (acc) =
+    if i >= len then acc
+    else list-tail-loop xs (i + 1) len (list-push acc (list-at xs i))
+
+Section: Slicing (extended)
+
+  list-take : List a, Integer -> List a
+  list-take (xs) (n) = list-take-loop xs 0 (if n > list-length xs then list-length xs else n) []
+
+  list-take-loop : List a, Integer, Integer, List a -> List a
+  list-take-loop (xs) (i) (n) (acc) =
+    if i >= n then acc
+    else list-take-loop xs (i + 1) n (list-push acc (list-at xs i))
+
+  list-drop : List a, Integer -> List a
+  list-drop (xs) (n) = list-tail-loop xs (if n > list-length xs then list-length xs else n) (list-length xs) []
+
+Section: Map and Fold
+
+  list-map : (a -> [e] b), List a -> [e] List b
+  list-map (f) (xs) = map-list f xs
+
+  map-list : (a -> [e] b), List a -> [e] List b
+  map-list (f) (xs) =
+   map-list-loop f xs 0 (list-length xs) []
+
+  map-list-loop : (a -> [e] b), List a, Integer, Integer, List b -> [e] List b
+  map-list-loop (f) (xs) (i) (len) (acc) =
+   if i == len then acc
+   else map-list-loop f xs (i + 1) len (list-push acc (f (list-at xs i)))
+
+  fold-list : (b, a -> [e] b), b, List a -> [e] b
+  fold-list (f) (z) (xs) =
+   fold-list-loop f z xs 0 (list-length xs)
+
+  fold-list-loop : (b, a -> [e] b), b, List a, Integer, Integer -> [e] b
+  fold-list-loop (f) (z) (xs) (i) (len) =
+   if i == len then z
+   else fold-list-loop f (f z (list-at xs i)) xs (i + 1) len
+
+Section: Filter and Search
+
+  list-filter : List a, (a -> [e] Boolean) -> [e] List a
+  list-filter (xs) (pred) =
+    list-filter-loop xs pred 0 (list-length xs) []
+
+  list-filter-loop : List a, (a -> [e] Boolean), Integer, Integer, List a -> [e] List a
+  list-filter-loop (xs) (pred) (i) (len) (acc) =
+    if i >= len then acc
+    else let x = list-at xs i
+    in if pred x then list-filter-loop xs pred (i + 1) len (list-push acc x)
+    else list-filter-loop xs pred (i + 1) len acc
+
+  list-contains : List a, (a -> Boolean) -> Boolean
+  list-contains (xs) (pred) =
+    list-contains-loop xs pred 0 (list-length xs)
+
+  list-contains-loop : List a, (a -> Boolean), Integer, Integer -> Boolean
+  list-contains-loop (xs) (pred) (i) (len) =
+    if i >= len then False
+    else if pred (list-at xs i) then True
+    else list-contains-loop xs pred (i + 1) len
+
+  list-remove : List a, (a -> Boolean) -> List a
+  list-remove (xs) (pred) =
+    list-remove-loop xs pred 0 (list-length xs) [] False
+
+  list-remove-loop : List a, (a -> Boolean), Integer, Integer, List a, Boolean -> List a
+  list-remove-loop (xs) (pred) (i) (len) (acc) (found) =
+    if i >= len then acc
+    else let x = list-at xs i
+    in if found then list-remove-loop xs pred (i + 1) len (list-push acc x) True
+    else if pred x then list-remove-loop xs pred (i + 1) len acc True
+    else list-remove-loop xs pred (i + 1) len (list-push acc x) False
+
+Page 1
+
+Chapter: Tuple
+
+Section: Definitions
+
+  Tup2 (a) (b) =
+    | MkTup2 (a) (b)
+
+  Tup3 (a) (b) (c) =
+    | MkTup3 (a) (b) (c)
+
+  Tup4 (a) (b) (c) (d) =
+    | MkTup4 (a) (b) (c) (d)
+
+  Tup5 (a) (b) (c) (d) (e) =
+    | MkTup5 (a) (b) (c) (d) (e)
+
+  pair-first : (a, b) -> a
+  pair-first (p) =
+   let (x, y) = p in x
+
+  pair-second : (a, b) -> b
+  pair-second (p) =
+   let (x, y) = p in y
+
+Page 1
+
+Chapter: RealCompareNegative
+
+ `<`, `>`, `<=` and `>=` on Real were emitted as a SIGNED INTEGER compare of
+ the two IEEE-754 bit patterns. That is right for two non-negatives and right
+ for mixed signs, because a double's sign bit sits where the integer sign bit
+ sits. For two negatives the order reverses, and every one of the four
+ operators answered backwards.
+
+Section: Operands
+
+  neg-big : Real
+  neg-big = 0.0 - 2.9
+
+  neg-small : Real
+  neg-small = 0.0 - 1.5
+
+  pos-big : Real
+  pos-big = 2.9
+
+  pos-small : Real
+  pos-small = 1.5
+
+  zero : Real
+  zero = 0.0
+
+Section: The Two Paths
+
+  b2i : Boolean -> Integer
+  b2i (b) = if b then 1 else 0
+
+  fused-lt : Real, Real -> Integer
+  fused-lt (a) (b) = if a < b then 1 else 0
+
+  fused-gt : Real, Real -> Integer
+  fused-gt (a) (b) = if a > b then 1 else 0
+
+  fused-le : Real, Real -> Integer
+  fused-le (a) (b) = if a <= b then 1 else 0
+
+  fused-ge : Real, Real -> Integer
+  fused-ge (a) (b) = if a >= b then 1 else 0
+
+  val-lt : Real, Real -> Integer
+  val-lt (a) (b) = b2i (a < b)
+
+  val-gt : Real, Real -> Integer
+  val-gt (a) (b) = b2i (a > b)
+
+  val-le : Real, Real -> Integer
+  val-le (a) (b) = b2i (a <= b)
+
+  val-ge : Real, Real -> Integer
+  val-ge (a) (b) = b2i (a >= b)
+
+Section: Report
+
+  say-lt : Text, Real, Real -> Text
+  say-lt (label) (a) (b) = label & " " & show (fused-lt a b) & show (val-lt a b)
+
+  say-gt : Text, Real, Real -> Text
+  say-gt (label) (a) (b) = label & " " & show (fused-gt a b) & show (val-gt a b)
+
+  say-le : Text, Real, Real -> Text
+  say-le (label) (a) (b) = label & " " & show (fused-le a b) & show (val-le a b)
+
+  say-ge : Text, Real, Real -> Text
+  say-ge (label) (a) (b) = label & " " & show (fused-ge a b) & show (val-ge a b)
+
+  opening : [Console] Nothing
+  opening = act
+    print-line-uni (say-lt "neg-big lt neg-small want 11" neg-big neg-small)
+    print-line-uni (say-gt "neg-big gt neg-small want 00" neg-big neg-small)
+    print-line-uni (say-le "neg-big le neg-small want 11" neg-big neg-small)
+    print-line-uni (say-ge "neg-big ge neg-small want 00" neg-big neg-small)
+    print-line-uni (say-lt "neg-small lt neg-big want 00" neg-small neg-big)
+    print-line-uni (say-gt "neg-small gt neg-big want 11" neg-small neg-big)
+    print-line-uni (say-lt "neg-big lt neg-big want 00" neg-big neg-big)
+    print-line-uni (say-le "neg-big le neg-big want 11" neg-big neg-big)
+    print-line-uni (say-ge "neg-big ge neg-big want 11" neg-big neg-big)
+    print-line-uni (say-lt "pos-small lt pos-big want 11" pos-small pos-big)
+    print-line-uni (say-gt "pos-small gt pos-big want 00" pos-small pos-big)
+    print-line-uni (say-lt "neg-big lt pos-small want 11" neg-big pos-small)
+    print-line-uni (say-lt "pos-big lt neg-small want 00" pos-big neg-small)
+    print-line-uni (say-lt "neg-small lt zero want 11" neg-small zero)
+    print-line-uni (say-gt "neg-small gt zero want 00" neg-small zero)
+  end
