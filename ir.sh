@@ -66,6 +66,13 @@ Section: Entry
 HARNESS
   ours=$("$BIN" "$work/prog.codex" 2>/dev/null)
   gold=$("$CODEXIR" < "$u" 2>&1 >/dev/null)
+  # **TWO EMPTY STRINGS ARE EQUAL, AND THAT MUST NOT READ AS AGREEMENT.**
+  # Both arms print their IR on a stream this script has to pick, and picking
+  # the wrong one yields "" from both -- which compares equal 28 times and looks
+  # exactly like success. Every IR document starts `(chapter`, so demand it.
+  if [ "${gold:0:8}" != "(chapter" ]; then
+    fail=$((fail+1)); printf '%-32s ORACLE EMITTED NO IR (%d B)\n' "$n" "${#gold}"; continue
+  fi
   if [ "$ours" = "$gold" ]; then
     pass=$((pass+1))
   else

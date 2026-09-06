@@ -36,3 +36,26 @@ in".
 Both write every row to disk as it is measured (`screen.tsv`, `gates.tsv`,
 `native.tsv`) and resume from those files, because an earlier version held
 results in memory and lost eleven minutes of compiles to one interruption.
+
+## Proving the gates can fail
+
+A gate nobody has seen fail is a gate nobody has tested. Both were tampered:
+
+| defect injected                       | `run.sh`   | `ir.sh`     |
+|---------------------------------------|------------|-------------|
+| nullary cache shares one list         | 27/28 CAUGHT | 28/28 missed |
+| Real literal off by one ULP           | 28/28 missed | 26/28 CAUGHT |
+
+**NEITHER GATE SUBSUMES THE OTHER, and that is measured rather than argued.**
+`run.sh` misses the ULP defect because running a program parses Real literals
+through the interpreter's own path; `text-to-double-bits` is reached only when
+INTERPRETING THE FRONTEND. `ir.sh` misses the cache defect because the frontend
+itself uses `list-set-at`, so the nullary cache is already off for lists there
+and the bug cannot manifest.
+
+Both tampers changed bytes WITHOUT changing length -- 8681 against 8681, and a
+single digit `...767` against `...766`. Neither would be caught by a size check.
+
+A third, null tamper edits a unit and confirms both arms move together and stay
+identical, and `ir.sh` refuses any run where the oracle emits no IR at all --
+two empty strings compare equal, and that must never read as agreement.
