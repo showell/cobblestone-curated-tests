@@ -26,7 +26,7 @@ here=$(cd "$(dirname "$0")" && pwd)
 GEN=${CODEXZIG_GEN:-/home/steve/showell_repos/codex-zig-transpiler/generated}
 CODEXIR=${CODEXIR:-$GEN/local/codexir}
 WASMREPO=${CXWASM:-/home/steve/showell_repos/codex-wasm-transpiler}
-export COBBLESTONE_ROOT=${COBBLESTONE_ROOT:-/home/steve/showell_repos/cobblestone-addrfix}
+export COBBLESTONE_ROOT=${COBBLESTONE_ROOT:-/home/steve/showell_repos/cobblestone-u56-sunday}
 export CODEXZIG=${CODEXZIG:-$GEN/local/codexzig}
 for f in "$CODEXIR" "$WASMREPO/corpus_sweep.py" "$CODEXZIG"; do
   [ -e "$f" ] || { echo "missing $f" >&2; exit 2; }

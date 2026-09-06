@@ -1,7 +1,7 @@
 Every unit here was RESOLVED from a Cobblestone checkout and frozen. Nothing in
 this repository cites anything; each .codex is self-contained.
 
-checkout   /home/steve/showell_repos/cobblestone-addrfix
+checkout   /home/steve/showell_repos/cobblestone-u56-sunday
 branch     u56-candidate-sunday
 commit     1cc247ae10dcb03d47b2265d1739800cda3d0d15
 resolved   2026-09-06T20:06:02Z by rust-codex-compiler ladder/curate.py
