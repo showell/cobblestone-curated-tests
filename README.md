@@ -2,8 +2,9 @@
 
 Twenty-eight Codex programs, frozen, each with upstream's own expected output.
 
-    ./run.sh                    # the Rust interpreter
+    ./run.sh                    # the Rust interpreter runs each program
     ./run.sh <other-binary>     # anything that takes a unit on argv
+    ./ir.sh                     # two HOSTS for one frontend, IR compared
 
 Every `.codex` here is a RESOLVED UNIT: self-contained, citing nothing. There is
 no `CODEX_ROOT`, no quire registry, no cite resolution. A program is one file
@@ -11,6 +12,13 @@ and its answer is one file.
 
 `PROVENANCE` says which checkout and commit they came from, how the 1,727-program
 corpus was cut down to these, and what the set is deliberately thin on.
+
+`ir.sh` asks the other question: the Rust interpreter INTERPRETS the Codex
+frontend to compile each unit, `codexir` is that same frontend as a native
+binary compiling the same unit, and the two IR documents must be identical
+bytes. The only thing that varies is the host, so a difference is an
+interpreter defect with no third explanation. Thirty-six seconds for the set,
+against days for the same question over the whole corpus.
 
 The point of the set is that we can demand PERFECTION of it. It is small enough
 to run in seconds and to read, so "27 of 28" is a bug list, not a statistic.
