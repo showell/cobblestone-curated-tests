@@ -1,24 +1,11 @@
 #!/usr/bin/env bash
-# RUST COMPILING CODEX DIRECTLY, over the curated set.
+# Compile each unit to IR with irdump (Rust) and diff it, byte for byte,
+# against codexir (upstream's frontend as a native binary).
 #
-#   ./native.sh
+#   ./ir-irdump.sh
 #
-# The other three scripts all have a Codex compiler somewhere in the loop.
-# This one does not: `irdump` is Rust reading a .codex unit and producing IR
-# itself, and the question is whether it reaches the document `codexir` --
-# upstream's own frontend -- produces from the same bytes.
-#
-# THE UNITS ARE ALREADY RESOLVED, SO NOTHING RESOLVES THEM AGAIN. The
-# compiler's own `ladder/native.py` runs `cite_resolve` first, which is right
-# for a raw corpus program and wrong here: re-resolving a frozen unit
-# duplicates its cited chapters (normalize-eq goes 4256 -> 7965 bytes) and the
-# ORACLE then halts on the duplicates. That reads as 20 of 28 programs the
-# oracle refused, which is a broken control wearing the costume of a result.
-#
-# THREE VERDICTS, AND ONLY ONE OF THEM IS A BUG. `irdump` returns the reason
-# it could not compile a definition rather than guessing, so REFUSED is a
-# named hole in a front end that is still being built. DIFFERS is the one that
-# means the lowering is wrong.
+# Verdicts: agree, DIFFERS (irdump's lowering disagrees), REFUSED (irdump
+# cannot type it yet). Units are pre-resolved; nothing re-resolves them.
 set -uo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 GEN=${CODEXZIG_GEN:-/home/steve/showell_repos/codex-zig-transpiler/generated}

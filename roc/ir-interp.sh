@@ -1,20 +1,8 @@
 #!/usr/bin/env bash
-# ONE COMPILER, ONE SOURCE, TWO HOSTS -- over the curated set.
+# Run the Codex frontend over each Roc port two ways -- our interpreter
+# (codexrun) and codexir -- and diff the IR. Only the host varies.
 #
-#   ./ir.sh
-#
-# For every unit: the Rust interpreter INTERPRETS the Codex frontend to compile
-# it, and `codexir` -- that same frontend as a native binary -- compiles it too.
-# The two IR documents must be identical bytes. A difference is an interpreter
-# defect and there is no third explanation, because the only thing that varies
-# is the host.
-#
-# THE SUBJECT IS DERIVED, NOT FROZEN. `codexir` is BUILT from
-# `generated/codexir-subject.codex`, so the frontend the interpreter reads has
-# to be that same file with its harness chapter cut off. Freezing a copy here
-# would let the two drift and quietly turn the control into a comparison of two
-# different compilers -- which is the exact confound this repository exists to
-# remove everywhere else.
+#   ./ir-interp.sh
 set -uo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 GEN=${CODEXZIG_GEN:-/home/steve/showell_repos/codex-zig-transpiler/generated}
@@ -39,8 +27,8 @@ PY
 pass=0; fail=0
 for u in "$here"/units/*.codex; do
   n=$(basename "$u" .codex)
-  # The harness is the driver's own, word for word: same entry chapter literal
-  # "Program", same refusal wording, so the comparison is raw bytes.
+  # Same entry chapter "Program" and refusal wording as the driver, so the
+  # two IR documents compare as raw bytes.
   cat "$work/frontend.codex" > "$work/prog.codex"
   cat >> "$work/prog.codex" <<HARNESS
 
@@ -68,10 +56,8 @@ Section: Entry
 HARNESS
   ours=$("$BIN" "$work/prog.codex" 2>/dev/null)
   gold=$("$CODEXIR" < "$u" 2>&1 >/dev/null)
-  # **TWO EMPTY STRINGS ARE EQUAL, AND THAT MUST NOT READ AS AGREEMENT.**
-  # Both arms print their IR on a stream this script has to pick, and picking
-  # the wrong one yields "" from both -- which compares equal 28 times and looks
-  # exactly like success. Every IR document starts `(chapter`, so demand it.
+  # Both arms print IR on a stream we pick; a wrong pick yields "" from both,
+  # which would compare equal. Every IR document starts `(chapter`, so demand it.
   if [ "${gold:0:8}" != "(chapter" ]; then
     fail=$((fail+1)); printf '%-32s ORACLE EMITTED NO IR (%d B)\n' "$n" "${#gold}"; continue
   fi
