@@ -21,6 +21,8 @@ GEN=${CODEXZIG_GEN:-/home/steve/showell_repos/codex-zig-transpiler/generated}
 BIN=${CODEXRUN:-$HOME/build/rust-target/release/codexrun}
 CODEXIR=${CODEXIR:-$GEN/local/codexir}
 SUBJECT=$GEN/codexir-subject.codex
+. "$here/oracle_pin.sh"
+oracle_pin "$GEN" || exit 2
 for f in "$BIN" "$CODEXIR" "$SUBJECT"; do
   [ -e "$f" ] || { echo "missing $f" >&2; exit 2; }
 done

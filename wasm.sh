@@ -26,11 +26,18 @@ here=$(cd "$(dirname "$0")" && pwd)
 GEN=${CODEXZIG_GEN:-/home/steve/showell_repos/codex-zig-transpiler/generated}
 CODEXIR=${CODEXIR:-$GEN/local/codexir}
 WASMREPO=${CXWASM:-/home/steve/showell_repos/codex-wasm-transpiler}
-export COBBLESTONE_ROOT=${COBBLESTONE_ROOT:-/home/steve/showell_repos/cobblestone-u56-sunday}
 export CODEXZIG=${CODEXZIG:-$GEN/local/codexzig}
-for f in "$CODEXIR" "$WASMREPO/corpus_sweep.py" "$CODEXZIG"; do
+# The wasm plug is bundled from COBBLESTONE_ROOT (corpus_sweep.py ->
+# bundle_codexwasm.ps1 -> cobblestone.py), so it decides which language the
+# wasm arm grades. DERIVE it from the same checkout codexir was built from
+# rather than naming one here -- a hardcoded pin drifted to u56-sunday while
+# codexir/codexzig were u58, which is exactly the arm-vs-arm mismatch to avoid.
+export COBBLESTONE_ROOT=${COBBLESTONE_ROOT:-$(grep -m1 '^checkout' "$GEN/PROVENANCE.oracles" | awk '{print $2}')}
+for f in "$CODEXIR" "$WASMREPO/corpus_sweep.py" "$CODEXZIG" "$COBBLESTONE_ROOT/codex/compiler/opening.codex"; do
   [ -e "$f" ] || { echo "missing $f" >&2; exit 2; }
 done
+. "$here/oracle_pin.sh"
+oracle_pin "$GEN" || exit 2
 
 work=$(mktemp -d); trap 'rm -rf "$work"' EXIT
 for u in "$here"/units/*.codex; do

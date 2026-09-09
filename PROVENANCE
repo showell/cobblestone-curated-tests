@@ -6,6 +6,15 @@ branch     u56-candidate-sunday
 commit     1cc247ae10dcb03d47b2265d1739800cda3d0d15
 resolved   2026-09-06T20:06:02Z by rust-codex-compiler ladder/curate.py
 
+RE-VERIFIED AT UPDATE 58 (2026-09-09). Re-resolving all 28 source programs from
+cobblestone-u58 (8570fba1, the U58 candidate) with the Rust `bundle` produces
+BYTE-IDENTICAL units, and u58's own .expected files are byte-identical to the
+frozen ones -- nothing these 28 exercise moved u56 -> u58, so no rebank was
+needed. The cut above records where the set came from, not a staleness. The
+native/ir/wasm gates now announce the codexir pin they grade against
+(oracle_pin.sh) and wasm.sh derives COBBLESTONE_ROOT from that same pin, so no
+arm can silently drift to a different language than the oracle.
+
 HOW THESE 28 WERE CHOSEN, from the corpus's 1,727 programs:
 
   1727  every codex/test/**/*.codex

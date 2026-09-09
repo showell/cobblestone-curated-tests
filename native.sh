@@ -24,6 +24,8 @@ here=$(cd "$(dirname "$0")" && pwd)
 GEN=${CODEXZIG_GEN:-/home/steve/showell_repos/codex-zig-transpiler/generated}
 IRDUMP=${IRDUMP:-$HOME/build/rust-target/release/irdump}
 CODEXIR=${CODEXIR:-$GEN/local/codexir}
+. "$here/oracle_pin.sh"
+oracle_pin "$GEN" || exit 2
 for f in "$IRDUMP" "$CODEXIR"; do
   [ -e "$f" ] || { echo "missing $f" >&2; exit 2; }
 done
