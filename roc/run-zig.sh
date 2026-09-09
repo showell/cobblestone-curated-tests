@@ -9,10 +9,11 @@
 # codexzig prints its zig on stderr; a compiled Codex program prints on stderr too.
 set -uo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
-GEN=${CODEXZIG_GEN:-/home/steve/showell_repos/codex-zig-transpiler/generated}
-CODEXZIG=${CODEXZIG:-$GEN/local/codexzig}
-. "$here/oracle_pin.sh"
-oracle_pin "$GEN" || exit 2
+# The codexzig bundle: a directory holding the executable beside a PROVENANCE
+# that records the Cobblestone checkout it was built from. Point CODEXZIG at
+# another bundle to grade a different plug. This arm grades output against the
+# co-located .expected, so it needs no codexir oracle.
+CODEXZIG=${CODEXZIG:-$HOME/codexzig/codexzig}
 [ -x "$CODEXZIG" ] || { echo "missing $CODEXZIG" >&2; exit 2; }
 command -v zig >/dev/null || { echo "zig not on PATH" >&2; exit 2; }
 
