@@ -49,4 +49,4 @@ for u in "$here"/units/*.codex; do
     echo "$n: codexir emitted no IR ($(stat -c%s "$work/$n.ir") B)" >&2; exit 3; }
 done
 
-exec "$WASMREPO/corpus_sweep.py" --corpus "$work" --tests "$here/expected"
+exec "$WASMREPO/corpus_sweep.py" --corpus "$work" --tests "$here/units"

@@ -17,7 +17,7 @@ here=$(cd "$(dirname "$0")" && pwd)
 pass=0; fail=0
 for u in "$here"/units/*.codex; do
   n=$(basename "$u" .codex)
-  exp="$here/expected/$n.expected"
+  exp="${u%.codex}.expected"
   o=$("$BIN" "$u" 2>/dev/null); e=$("$BIN" "$u" 2>&1 >/dev/null)
   want=$(cat "$exp")
   if [ "$o" = "$want" ] || [ "$e" = "$want" ]; then
