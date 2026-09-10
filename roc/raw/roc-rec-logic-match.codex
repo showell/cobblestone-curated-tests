@@ -13,7 +13,10 @@ Chapter: RocRecLogicMatch
  A pattern three constructors deep. `True` and `False` are Codex's Boolean
  literals, so the constructors are `LTrue` and `LFalse`. A second line
  evaluates the formula, which is the value the pattern is asserting the
- shape of.
+ shape of. Two more formulas differ from the pattern only INSIDE the nested
+ constructors -- `Or LTrue LTrue` and `Not LTrue` -- and must fall to
+ `bad`: a plug that reads a nested pattern as a wildcard prints `ok` for
+ them.
 
 Section: Types
 
@@ -49,5 +52,7 @@ Section: Entry
    in act
     print-line-uni (shape-check formula)
     print-line-uni (if logic-eval formula then "true" else "false")
+    print-line-uni (shape-check (And (Or LTrue LTrue) (Not LFalse)))
+    print-line-uni (shape-check (And (Or LTrue LFalse) (Not LTrue)))
    end
   end
