@@ -8,3 +8,7 @@ roc-poly-nopayload-variant	run-zig	COMPILER-74 (PR 139): the no-payload construc
 roc-iter-map	run-zig	PR 140: a nested closure field carries the record declaration's parameter; the plug refuses T16
 roc-iter-keep-if	run-zig	PR 140: as roc-iter-map
 roc-iter-drop-if	run-zig	PR 140: as roc-iter-map
+roc-match-nested-tags	run-zig	PR 141: a nested sub-pattern is read as a wildcard by the plug at 65aaf61e
+roc-match-nested-tags	run-wasm	PR 141: as run-zig
+roc-rec-logic-match	run-zig	PR 141: as roc-match-nested-tags
+roc-rec-logic-match	run-wasm	PR 141: as run-zig
