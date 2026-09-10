@@ -1,0 +1,18 @@
+(chapter "Program"
+  (title "LocalNarrowProven")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops)
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (rec-def "Meta" (tparams) (fields (rec-field "count" (a-bounded (a-named "Integer") 0 4294967295 ov-error)))))
+  (defs
+  (def "measure" "LocalNarrowProven" (params (param "xs" (list int-default))) (fn (list int-default) (record-ty "Meta" (args))) (let "n" int-default (apply (name "list-length" (fn (list int-default) int-default)) (name "xs" (list int-default)) int-default) (let "m" int-default (name "n" int-default) (record "Meta" (fields (field-val "count" (name "m" int-default))) (record-ty "Meta" (args))))) 0 0)
+  (def "opening" "LocalNarrowProven" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 457))) (apply (name "integer-to-text" (fn int-default text)) (field-access (apply (name "measure" (fn (list int-default) (record-ty "Meta" (args)))) (list-expr (elems (int-lit 10) (int-lit 20) (int-lit 30)) int-default) (record-ty "Meta" (args))) "count/0" (int 0 4294967295 ov-error)) text) nothing))) nothing) 0 0)))

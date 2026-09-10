@@ -1,0 +1,21 @@
+(chapter "Program"
+  (title "FwdInputTest")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Key Codes" "Input State" "Key Queries" "Mouse Queries" "Update" "Action Mapping" "Standard WASD Bindings" "Formatting" "Entry")
+  (ctors "ActionAttack" "ActionInteract" "ActionMoveRight" "ActionMoveLeft" "ActionMoveForward" "ActionMoveBack" "ActionPause" "ActionJump" "None" "MkTup2" "MkTup3" "MkTup4" "MkTup5" "Key0" "Key1" "Key2" "Key3" "Key4" "Key5" "Key6" "Key7" "Key8" "Key9" "KeyE" "KeyEnter" "KeyEscape" "KeyEquals" "KeyTab" "KeyA" "KeyAlt" "KeyS" "KeyShift" "KeySpace" "KeyR" "KeyRight" "KeyD" "KeyDelete" "KeyDown" "KeyLeft" "KeyCtrl" "KeyUp" "KeyMinus" "KeyW" "KeyF" "KeyF1" "KeyF10" "KeyF11" "KeyF12" "KeyF2" "KeyF3" "KeyF4" "KeyF5" "KeyF6" "KeyF7" "KeyF8" "KeyF9" "KeyBackspace" "KeyQ" "Just")
+  (eff-ops)
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (var-def "Maybe" (tparams "a") (ctors (var-ctor "Just" (fields (a-named "a"))) (var-ctor "None" (fields))))
+  (var-def "KeyCode" (tparams) (ctors (var-ctor "KeyW" (fields)) (var-ctor "KeyA" (fields)) (var-ctor "KeyS" (fields)) (var-ctor "KeyD" (fields)) (var-ctor "KeyQ" (fields)) (var-ctor "KeyE" (fields)) (var-ctor "KeyR" (fields)) (var-ctor "KeyF" (fields)) (var-ctor "KeyUp" (fields)) (var-ctor "KeyDown" (fields)) (var-ctor "KeyLeft" (fields)) (var-ctor "KeyRight" (fields)) (var-ctor "KeySpace" (fields)) (var-ctor "KeyEscape" (fields)) (var-ctor "KeyEnter" (fields)) (var-ctor "KeyTab" (fields)) (var-ctor "KeyShift" (fields)) (var-ctor "KeyCtrl" (fields)) (var-ctor "KeyAlt" (fields)) (var-ctor "Key0" (fields)) (var-ctor "Key1" (fields)) (var-ctor "Key2" (fields)) (var-ctor "Key3" (fields)) (var-ctor "Key4" (fields)) (var-ctor "Key5" (fields)) (var-ctor "Key6" (fields)) (var-ctor "Key7" (fields)) (var-ctor "Key8" (fields)) (var-ctor "Key9" (fields)) (var-ctor "KeyF1" (fields)) (var-ctor "KeyF2" (fields)) (var-ctor "KeyF3" (fields)) (var-ctor "KeyF4" (fields)) (var-ctor "KeyF5" (fields)) (var-ctor "KeyF6" (fields)) (var-ctor "KeyF7" (fields)) (var-ctor "KeyF8" (fields)) (var-ctor "KeyF9" (fields)) (var-ctor "KeyF10" (fields)) (var-ctor "KeyF11" (fields)) (var-ctor "KeyF12" (fields)) (var-ctor "KeyBackspace" (fields)) (var-ctor "KeyDelete" (fields)) (var-ctor "KeyMinus" (fields)) (var-ctor "KeyEquals" (fields))))
+  (rec-def "InputState" (tparams) (fields (rec-field "inp-keys-down" (a-app (a-named "List") (args (a-named "Integer")))) (rec-field "inp-keys-prev" (a-app (a-named "List") (args (a-named "Integer")))) (rec-field "inp-mouse-x" (a-named "Integer")) (rec-field "inp-mouse-y" (a-named "Integer")) (rec-field "inp-mouse-prev-x" (a-named "Integer")) (rec-field "inp-mouse-prev-y" (a-named "Integer")) (rec-field "inp-mouse-buttons" (a-named "Integer"))))
+  (var-def "InputAction" (tparams) (ctors (var-ctor "ActionMoveForward" (fields)) (var-ctor "ActionMoveBack" (fields)) (var-ctor "ActionMoveLeft" (fields)) (var-ctor "ActionMoveRight" (fields)) (var-ctor "ActionJump" (fields)) (var-ctor "ActionAttack" (fields)) (var-ctor "ActionInteract" (fields)) (var-ctor "ActionPause" (fields))))
+  (rec-def "InputBinding" (tparams) (fields (rec-field "ib-action" (a-named "InputAction")) (rec-field "ib-scancode" (a-named "Integer")))))
+  (defs
+  (def "opening" "FwdInputTest" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 670))) (text-lit "Engine/Input OK") nothing))) nothing) 0 0)))

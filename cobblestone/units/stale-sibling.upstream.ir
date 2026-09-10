@@ -1,0 +1,22 @@
+(chapter "Program"
+  (title "Stale Sibling")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Arms" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops)
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (rec-def "Box" (tparams) (fields (rec-field "n" (a-named "Integer")))))
+  (defs
+  (def "addn" "Stale Sibling" (params (param "b" (record-ty "Box" (args))) (param "k" int-default)) (fn (record-ty "Box" (args)) (fn int-default (record-ty "Box" (args)))) (apply (apply (apply (name "__record-set" (fn (record-ty "Box" (args)) (fn text (fn int-default (record-ty "Box" (args)))))) (name "b" (record-ty "Box" (args))) (fn text (fn int-default (record-ty "Box" (args))))) (text-lit "n") (fn int-default (record-ty "Box" (args)))) (binary add-int (field-access (name "b" (record-ty "Box" (args))) "n/0" int-default) (name "k" int-default) int-default) (record-ty "Box" (args))) 0 0)
+  (def "two" "Stale Sibling" (params (param "b" (record-ty "Box" (args))) (param "x" int-default)) (fn (record-ty "Box" (args)) (fn int-default int-default)) (binary add-int (field-access (name "b" (record-ty "Box" (args))) "n/0" int-default) (name "x" int-default) int-default) 0 0)
+  (def "three" "Stale Sibling" (params (param "b" (record-ty "Box" (args))) (param "x" int-default) (param "y" int-default)) (fn (record-ty "Box" (args)) (fn int-default (fn int-default int-default))) (binary add-int (binary add-int (field-access (name "b" (record-ty "Box" (args))) "n/0" int-default) (name "x" int-default) int-default) (name "y" int-default) int-default) 0 0)
+  (def "arm-sibling" "Stale Sibling" (params (param "ss" (record-ty "Box" (args)))) (fn (record-ty "Box" (args)) int-default) (apply (apply (name "two" (fn (record-ty "Box" (args)) (fn int-default int-default))) (apply (apply (name "addn" (fn (record-ty "Box" (args)) (fn int-default (record-ty "Box" (args))))) (name "ss" (record-ty "Box" (args))) (fn int-default (record-ty "Box" (args)))) (int-lit 10) (record-ty "Box" (args))) (fn int-default int-default)) (field-access (name "ss" (record-ty "Box" (args))) "n/0" int-default) int-default) 0 0)
+  (def "arm-sibling3" "Stale Sibling" (params (param "s3" (record-ty "Box" (args)))) (fn (record-ty "Box" (args)) int-default) (apply (apply (apply (name "three" (fn (record-ty "Box" (args)) (fn int-default (fn int-default int-default)))) (apply (apply (name "addn" (fn (record-ty "Box" (args)) (fn int-default (record-ty "Box" (args))))) (name "s3" (record-ty "Box" (args))) (fn int-default (record-ty "Box" (args)))) (int-lit 10) (record-ty "Box" (args))) (fn int-default (fn int-default int-default))) (field-access (name "s3" (record-ty "Box" (args))) "n/0" int-default) (fn int-default int-default)) (int-lit 5) int-default) 0 0)
+  (def "opening" "Stale Sibling" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line" (fn text nothing (row (labels (label "Console.Write" "")) "" 490))) (apply (name "integer-to-text" (fn int-default text)) (apply (name "arm-sibling" (fn (record-ty "Box" (args)) int-default)) (record "Box" (fields (field-val "n" (int-lit 1))) (record-ty "Box" (args))) int-default) text) nothing)) (do-exec (apply (name "print-line" (fn text nothing (row (labels (label "Console.Write" "")) "" 499))) (apply (name "integer-to-text" (fn int-default text)) (apply (name "arm-sibling3" (fn (record-ty "Box" (args)) int-default)) (record "Box" (fields (field-val "n" (int-lit 1))) (record-ty "Box" (args))) int-default) text) nothing))) nothing) 0 0)))

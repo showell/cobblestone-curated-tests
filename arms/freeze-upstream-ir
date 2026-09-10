@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+"""Freeze UPSTREAM's IR for each unit: the codexir bundle writes
+`<name>.upstream.ir` beside it. Re-frozen only when the pin moves, and the
+diff of that re-freeze is what the Update changed. It is the input run-wasm
+feeds the wasm plug and one side of ir-diff. A unit codexir refuses gets no
+file and is reported.
+
+    arms/freeze-upstream-ir <units-dir>
+"""
+import sys
+sys.path.insert(0, __file__.rsplit("/", 1)[0])
+import common as C
+
+d = C.arg_dir()
+t = C.header("freeze-upstream-ir", d, "codexir")
+tally = C.Tally(good=("frozen", "unchanged"))
+for u in C.units(d):
+    r = C.run([t["codexir"] / "codexir"], stdin=u)
+    C.freeze(tally, u, u.with_suffix(".upstream.ir"), r.stderr,
+             r.returncode == 0 and r.stderr.startswith(b"(chapter"))
+sys.exit(tally.close())

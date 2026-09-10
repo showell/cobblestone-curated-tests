@@ -1,0 +1,18 @@
+(chapter "Program"
+  (title "FwdGpuWarpTest")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Types" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops)
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (rec-def "WarpMask" (tparams) (fields (rec-field "wm-bits" (a-named "Integer")))))
+  (defs
+  (def "warp-full-mask" "Warp" (params) (record-ty "WarpMask" (args)) (record "WarpMask" (fields (field-val "wm-bits" (int-lit 4294967295))) (record-ty "WarpMask" (args))) 0 0)
+  (def "opening" "FwdGpuWarpTest" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (let "m" (record-ty "WarpMask" (args)) (name "warp-full-mask" (record-ty "WarpMask" (args))) (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 454))) (apply (name "integer-to-text" (fn int-default text)) (field-access (name "m" (record-ty "WarpMask" (args))) "wm-bits/0" int-default) text) nothing)))) nothing) 0 0)))

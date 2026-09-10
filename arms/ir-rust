@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+"""Does irdump (the Rust frontend) still emit the IR frozen beside each unit
+(`<name>.rust.ir`, arms/freeze-rust-ir)? Byte for byte. DIFFERS means the
+compiler changed what it emits: a regression, or an intended change that now
+wants a reviewed re-freeze. A unit with no frozen file is reported, never
+skipped.
+
+    arms/ir-rust <units-dir>
+"""
+import sys
+sys.path.insert(0, __file__.rsplit("/", 1)[0])
+import common as C
+
+d = C.arg_dir()
+t = C.header("ir-rust", d, "rust")
+tally = C.Tally()
+for u in C.units(d):
+    frozen = u.with_suffix(".rust.ir")
+    if not frozen.is_file():
+        tally.verdict(u.stem, "no-frozen-ir", "run arms/freeze-rust-ir")
+        continue
+    r = C.run([t["rust"] / "irdump", "whole", u, "Program"])
+    if r.returncode != 0:
+        tally.verdict(u.stem, "refused", (C.text(r.stderr).strip().splitlines() or ["?"])[-1][:70])
+    elif r.stdout == frozen.read_bytes():
+        tally.verdict(u.stem, "agree", f"{len(r.stdout)} bytes")
+    else:
+        tally.verdict(u.stem, "differs", f"{len(r.stdout)} vs frozen {frozen.stat().st_size}")
+sys.exit(tally.close())

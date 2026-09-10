@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+"""Where do the two frozen IRs differ? `<name>.rust.ir` against
+`<name>.upstream.ir`, byte for byte, with the first differing token of each.
+A report, not a gate: the Rust compiler is the reference for well-typed IR, so
+a difference is a place to READ -- ours ahead, upstream ahead, or a genuine
+disagreement -- and the exit code is always 0. Regression is ir-rust's job.
+
+    arms/ir-diff <units-dir>
+"""
+import sys
+sys.path.insert(0, __file__.rsplit("/", 1)[0])
+import common as C
+
+d = C.arg_dir()
+C.header("ir-diff", d)
+tally = C.Tally(good=("same",), soft=("differs", "upstream-refused", "rust-refused"))
+for u in C.units(d):
+    a, b = u.with_suffix(".rust.ir"), u.with_suffix(".upstream.ir")
+    if not a.is_file() and not b.is_file():
+        tally.verdict(u.stem, "both-refused")
+    elif not b.is_file():
+        tally.verdict(u.stem, "upstream-refused")
+    elif not a.is_file():
+        tally.verdict(u.stem, "rust-refused")
+    else:
+        x, y = a.read_bytes(), b.read_bytes()
+        if x == y:
+            tally.verdict(u.stem, "same", f"{len(x)} bytes")
+        else:
+            xs, ys = C.text(x).split(), C.text(y).split()
+            i = next((i for i, (p, q) in enumerate(zip(xs, ys)) if p != q), min(len(xs), len(ys)))
+            tally.verdict(u.stem, "differs", f"{len(x)} vs {len(y)} bytes; token {i}: {' '.join(xs[i:i+3])[:28]} | {' '.join(ys[i:i+3])[:28]}")
+tally.close()
+sys.exit(0)

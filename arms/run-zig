@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+"""Compile each unit with upstream's zig plug (codexzig -> zig build-exe), run
+it, and compare its output to the `.expected` beside it. zig's own type
+checking is part of the test: BUILD-FAILED means the plug or upstream's
+frontend left a type unresolved or emitted it wrong. A compiled Codex program
+prints on stderr, and codexzig prints its zig on stderr.
+
+    arms/run-zig <units-dir>
+"""
+import sys, tempfile, pathlib
+sys.path.insert(0, __file__.rsplit("/", 1)[0])
+import common as C
+
+d = C.arg_dir()
+t = C.header("run-zig", d, "codexzig", "zig")
+tally = C.Tally()
+with tempfile.TemporaryDirectory() as w:
+    w = pathlib.Path(w)
+    for u in C.units(d):
+        n = u.stem
+        r = C.run([t["codexzig"] / "codexzig"], stdin=u)
+        zig = w / f"{n}.zig"
+        zig.write_bytes(r.stderr)
+        if not r.stderr or r.stderr[:14].startswith(b"CODEGEN-HALTED"):
+            tally.verdict(n, "refused", C.text(r.stderr[:80]).strip().splitlines()[:1][0] if r.stderr else "no zig emitted")
+            continue
+        b = C.run([t["zig"], "build-exe", zig.name, f"-femit-bin={n}.exe"], cwd=w)
+        if b.returncode != 0:
+            err = [l for l in C.text(b.stderr).splitlines() if "error:" in l]
+            tally.verdict(n, "build-failed", (err[0] if err else C.text(b.stderr)[:70])[:90])
+            continue
+        x = C.run([w / f"{n}.exe"])
+        got = C.text(x.stderr)
+        if got == C.expected(u):
+            tally.verdict(n, "match")
+        else:
+            tally.verdict(n, "differs", f"got {len(got)}B, want {len(C.expected(u))}B")
+sys.exit(tally.close())

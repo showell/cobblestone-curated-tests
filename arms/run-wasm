@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+"""Compile each unit's frozen IR to a wasm module with the wasm plug, run it,
+and compare its output to the `.expected` beside it. The IR is upstream's
+(arms/freeze-upstream-ir), so this grades the plug, not the frontend. The work is
+codex-wasm-transpiler's corpus_sweep.py, which builds its IR driver with the
+codexzig bundle and takes the plug's language from that bundle's checkout.
+
+    arms/run-wasm <units-dir>
+"""
+import sys, os, tempfile, pathlib, shutil, subprocess
+sys.path.insert(0, __file__.rsplit("/", 1)[0])
+import common as C
+
+d = C.arg_dir()
+t = C.header("run-wasm", d, "codexwasm", "codexzig")
+prov = t["codexzig"] / "PROVENANCE"
+checkout = None
+for l in prov.read_text().splitlines():
+    if l.startswith("checkout"):
+        checkout = l.split()[1]
+if not checkout or not (pathlib.Path(checkout) / "codex" / "compiler" / "opening.codex").is_file():
+    raise SystemExit(f"codexzig's PROVENANCE names no usable checkout: {checkout}")
+with tempfile.TemporaryDirectory() as w:
+    w = pathlib.Path(w)
+    missing = []
+    for u in C.units(d):
+        ir = u.with_suffix(".upstream.ir")
+        if ir.is_file():
+            shutil.copy2(ir, w / (u.stem + ".ir"))
+        else:
+            missing.append(u.stem)
+    if missing:
+        raise SystemExit(f"{len(missing)} unit(s) have no frozen IR (run arms/freeze-upstream-ir): {' '.join(missing[:5])}")
+    env = dict(os.environ, CODEXZIG=str(t["codexzig"] / "codexzig"), COBBLESTONE_ROOT=checkout,
+               ZIG=str(t["zig"]))
+    r = subprocess.run([str(t["codexwasm"] / "corpus_sweep.py"), "--corpus", str(w), "--tests", d], env=env)
+    sys.exit(r.returncode)

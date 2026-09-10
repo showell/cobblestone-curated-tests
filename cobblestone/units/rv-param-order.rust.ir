@@ -1,0 +1,20 @@
+(chapter "Program"
+  (title "RvParamOrder")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Types" "Probes" "Entry")
+  (ctors "INil" "ICons" "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (var-def "IntList" (tparams) (ctors (var-ctor "INil" (fields)) (var-ctor "ICons" (fields (a-named "Integer") (a-named "IntList"))))))
+  (defs
+  (def "e-bound" "RvParamOrder" (params (param "acc" int-default) (param "xs" (sum "IntList" (args)))) (fn int-default (fn (sum "IntList" (args)) int-default)) (match (name "xs" (sum "IntList" (args))) (branches (branch (ctor-pat "ICons" (subs (var-pat "h" int-default) (var-pat "t" (sum "IntList" (args)))) (sum "IntList" (args))) (apply (apply (name "e-bound" (fn int-default (fn (sum "IntList" (args)) int-default))) (binary add-int (name "acc" int-default) (int-lit 1) int-default) (fn (sum "IntList" (args)) int-default)) (name "t" (sum "IntList" (args))) int-default) (bool-lit true)) (branch (ctor-pat "INil" (subs) (sum "IntList" (args))) (name "acc" int-default) (bool-lit true))) int-default) 0 0)
+  (def "e-swap" "RvParamOrder" (params (param "xs" (sum "IntList" (args))) (param "acc" int-default)) (fn (sum "IntList" (args)) (fn int-default int-default)) (match (name "xs" (sum "IntList" (args))) (branches (branch (ctor-pat "ICons" (subs (var-pat "h" int-default) (var-pat "t" (sum "IntList" (args)))) (sum "IntList" (args))) (apply (apply (name "e-swap" (fn (sum "IntList" (args)) (fn int-default int-default))) (name "t" (sum "IntList" (args))) (fn int-default int-default)) (binary add-int (name "acc" int-default) (int-lit 1) int-default) int-default) (bool-lit true)) (branch (ctor-pat "INil" (subs) (sum "IntList" (args))) (name "acc" int-default) (bool-lit true))) int-default) 0 0)
+  (def "three" "RvParamOrder" (params) (sum "IntList" (args)) (apply (apply (name "ICons" (fn int-default (fn (sum "IntList" (args)) (sum "IntList" (args))))) (int-lit 1) (fn (sum "IntList" (args)) (sum "IntList" (args)))) (apply (apply (name "ICons" (fn int-default (fn (sum "IntList" (args)) (sum "IntList" (args))))) (int-lit 2) (fn (sum "IntList" (args)) (sum "IntList" (args)))) (apply (apply (name "ICons" (fn int-default (fn (sum "IntList" (args)) (sum "IntList" (args))))) (int-lit 3) (fn (sum "IntList" (args)) (sum "IntList" (args)))) (name "INil" (sum "IntList" (args))) (sum "IntList" (args))) (sum "IntList" (args))) (sum "IntList" (args))) 0 0)
+  (def "opening" "RvParamOrder" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 484))) (binary append-text (text-lit "bound: ") (apply (name "show" (fn int-default text)) (apply (apply (name "e-bound" (fn int-default (fn (sum "IntList" (args)) int-default))) (int-lit 0) (fn (sum "IntList" (args)) int-default)) (name "three" (sum "IntList" (args))) int-default) text) text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 496))) (binary append-text (text-lit "swap: ") (apply (name "show" (fn int-default text)) (apply (apply (name "e-swap" (fn (sum "IntList" (args)) (fn int-default int-default))) (name "three" (sum "IntList" (args))) (fn int-default int-default)) (int-lit 0) int-default) text) text) nothing))) nothing) 0 0)))

@@ -1,0 +1,18 @@
+(chapter "Program"
+  (title "RealLiteralBoundary")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Definitions" "Body")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e"))))))
+  (defs
+  (def "frac-nineteen" "RealLiteralBoundary" (params) real (num-lit 4607738418749009766) 0 0)
+  (def "whole-nineteen" "RealLiteralBoundary" (params) real (num-lit 4862596447618666293) 0 0)
+  (def "opening" "RealLiteralBoundary" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 454))) (binary append-text (text-lit "whole-19-parses : ") (apply (name "show" (fn int-default text)) (apply (name "real-to-int" (fn real int-default)) (name "whole-nineteen" real) int-default) text) text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 463))) (binary append-text (text-lit "frac-19-parses  : ") (apply (name "show" (fn int-default text)) (apply (name "real-to-int" (fn real int-default)) (binary add-num (name "frac-nineteen" real) (name "frac-nineteen" real) real) int-default) text) text) nothing))) nothing) 0 0)))

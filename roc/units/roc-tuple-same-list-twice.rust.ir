@@ -1,0 +1,17 @@
+(chapter "Program"
+  (title "RocTupleSameListTwice")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Functions" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e"))))))
+  (defs
+  (def "read-pair" "RocTupleSameListTwice" (params (param "n" int-default)) (fn int-default int-default) (let "x" (list int-default) (list-expr (elems (int-lit 1) (int-lit 2)) int-default) (match (apply (apply (name "MkTup2" (fn (tvar 2) (fn (tvar 3) (ctd "Tup2" (args (tvar 2) (tvar 3)))))) (name "x" (list int-default)) (fn (tvar 3) (ctd "Tup2" (args (list int-default) (tvar 3))))) (name "x" (list int-default)) (ctd "Tup2" (args (list int-default) (list int-default)))) (branches (branch (ctor-pat "MkTup2" (subs (var-pat "first" (list int-default)) (var-pat "second" (list int-default))) (ctd "Tup2" (args (list int-default) (list int-default)))) (binary add-int (apply (apply (name "list-at" (fn (list int-default) (fn int-default int-default))) (name "first" (list int-default)) (fn int-default int-default)) (int-lit 0) int-default) (apply (apply (name "list-at" (fn (list int-default) (fn int-default int-default))) (name "first" (list int-default)) (fn int-default int-default)) (int-lit 1) int-default) int-default) (bool-lit true))) int-default)) 0 0)
+  (def "opening" "RocTupleSameListTwice" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 475))) (apply (name "show" (fn int-default text)) (apply (name "read-pair" (fn int-default int-default)) (int-lit 0) int-default) text) nothing))) nothing) 0 0)))

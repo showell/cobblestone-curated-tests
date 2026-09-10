@@ -1,0 +1,18 @@
+(chapter "Program"
+  (title "RocMutableReassign")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Types" "Functions" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (rec-def "Cell" (tparams) (fields (rec-field "lst" (a-app (a-named "List") (args (a-named "Integer"))))) (mutable)))
+  (defs
+  (def "reassign" "RocMutableReassign" (params (param "c" (record-ty "Cell" (args)))) (fn (record-ty "Cell" (args)) int-default) (let "__seq" (record-ty "Cell" (args)) (field-store (name "c" (record-ty "Cell" (args))) "lst/0" (list-expr (elems (int-lit 3) (int-lit 4)) int-default) (record-ty "Cell" (args))) (binary add-int (apply (apply (name "list-at" (fn (list int-default) (fn int-default int-default))) (field-access (name "c" (record-ty "Cell" (args))) "lst/0" (list int-default)) (fn int-default int-default)) (int-lit 0) int-default) (apply (apply (name "list-at" (fn (list int-default) (fn int-default int-default))) (field-access (name "c" (record-ty "Cell" (args))) "lst/0" (list int-default)) (fn int-default int-default)) (int-lit 1) int-default) int-default)) 0 0)
+  (def "opening" "RocMutableReassign" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 466))) (apply (name "show" (fn int-default text)) (apply (name "reassign" (fn (record-ty "Cell" (args)) int-default)) (record "Cell" (fields (field-val "lst" (list-expr (elems (int-lit 1) (int-lit 2)) int-default))) (record-ty "Cell" (args))) int-default) text) nothing))) nothing) 0 0)))

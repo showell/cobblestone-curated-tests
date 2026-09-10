@@ -1,0 +1,20 @@
+(chapter "Program"
+  (title "FreshAllocNarrow")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Types" "Probes" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops)
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (rec-def "Cell" (tparams) (fields (rec-field "val" (a-named "Integer")) (rec-field "aux" (a-named "Integer"))))
+  (rec-def "Box" (tparams) (fields (rec-field "n" (a-named "Integer")) (rec-field "m" (a-named "Integer"))) (mutable)))
+  (defs
+  (def "fresh-narrow" "FreshAllocNarrow" (params (param "t" (record-ty "Cell" (args)))) (fn (record-ty "Cell" (args)) int-default) (let "a" int-default (field-access (name "t" (record-ty "Cell" (args))) "val/0" int-default) (let "b" (record-ty "Box" (args)) (record "Box" (fields (field-val "n" (int-lit 0)) (field-val "m" (int-lit 0))) (record-ty "Box" (args))) (let "__seq" (record-ty "Box" (args)) (field-store (name "b" (record-ty "Box" (args))) "n/0" (binary add-int (name "a" int-default) (int-lit 41) int-default) (record-ty "Box" (args))) (binary add-int (binary add-int (name "a" int-default) (field-access (name "t" (record-ty "Cell" (args))) "val/0" int-default) int-default) (field-access (name "b" (record-ty "Box" (args))) "n/0" int-default) int-default)))) 0 0)
+  (def "alias-store" "FreshAllocNarrow" (params (param "n" int-default)) (fn int-default int-default) (let "b" (record-ty "Box" (args)) (record "Box" (fields (field-val "n" (name "n" int-default)) (field-val "m" (int-lit 0))) (record-ty "Box" (args))) (let "y" (record-ty "Box" (args)) (name "b" (record-ty "Box" (args))) (let "a" int-default (field-access (name "y" (record-ty "Box" (args))) "n/0" int-default) (let "__seq" (record-ty "Box" (args)) (field-store (name "b" (record-ty "Box" (args))) "n/0" (binary add-int (name "n" int-default) (int-lit 7) int-default) (record-ty "Box" (args))) (binary add-int (binary add-int (name "a" int-default) (field-access (name "y" (record-ty "Box" (args))) "n/0" int-default) int-default) (field-access (name "b" (record-ty "Box" (args))) "n/0" int-default) int-default))))) 0 0)
+  (def "opening" "FreshAllocNarrow" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 454))) (apply (name "integer-to-text" (fn int-default text)) (apply (name "fresh-narrow" (fn (record-ty "Cell" (args)) int-default)) (record "Cell" (fields (field-val "val" (int-lit 5)) (field-val "aux" (int-lit 0))) (record-ty "Cell" (args))) int-default) text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 463))) (apply (name "integer-to-text" (fn int-default text)) (apply (name "alias-store" (fn int-default int-default)) (int-lit 10) int-default) text) nothing))) nothing) 0 0)))

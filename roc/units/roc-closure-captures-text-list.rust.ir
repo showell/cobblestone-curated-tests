@@ -1,0 +1,18 @@
+(chapter "Program"
+  (title "RocClosureCapturesTextList")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Functions" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e"))))))
+  (defs
+  (def "capture-text" "RocClosureCapturesTextList" (params (param "n" int-default)) (fn int-default text) (let "x" (list text) (list-expr (elems (text-lit "captured") (text-lit "list")) text) (let "f" (fn int-default (list text)) (apply (name "__lam_0" (fn (list text) (fn int-default (list text)))) (name "x" (list text)) (fn int-default (list text))) (apply (apply (name "list-at" (fn (list text) (fn int-default text))) (apply (name "f" (fn int-default (list text))) (int-lit 0) (list text)) (fn int-default text)) (int-lit 0) text))) 0 0)
+  (def "opening" "RocClosureCapturesTextList" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 463))) (apply (name "capture-text" (fn int-default text)) (int-lit 0) text) nothing))) nothing) 0 0)
+  (def "__lam_0" "" (params (param "x" (list text)) (param "ignored" int-default)) (fn (list text) (fn int-default (list text))) (name "x" (list text)) 0 0)))

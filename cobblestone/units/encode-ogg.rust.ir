@@ -1,0 +1,17 @@
+(chapter "Program"
+  (title "FwdOggTest")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Constants" "Types" "Page Encoding" "OGG CRC32(polynomial 0 x04C11DB7)" "Multi-Page Stream" "Helpers" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops)
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (rec-def "OggPage" (tparams) (fields (rec-field "op-granule" (a-named "Integer")) (rec-field "op-serial" (a-named "Integer")) (rec-field "op-sequence" (a-named "Integer")) (rec-field "op-segments" (a-app (a-named "List") (args (a-app (a-named "List") (args (a-named "Integer")))))) (rec-field "op-is-first" (a-named "Boolean")) (rec-field "op-is-last" (a-named "Boolean")))))
+  (defs
+  (def "opening" "FwdOggTest" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 874))) (text-lit "Encode/Ogg OK") nothing))) nothing) 0 0)))

@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""OUR frontend's IR through the zig plug: irdump -> zigemit (the plug reading
+IR on stdin) -> zig build-exe -> run, against the `.expected` beside each
+unit. This is the type oracle for the Rust frontend: a hole our checker left
+is a BUILD-FAILED here and nowhere earlier -- the interpreter erases types, and
+agreement with a frozen IR cannot see a hole both frontends share. run-zig is
+the attribution: does upstream's whole pipeline share the break?
+
+    arms/ir-zig <units-dir>
+"""
+import sys, tempfile, pathlib
+sys.path.insert(0, __file__.rsplit("/", 1)[0])
+import common as C
+
+d = C.arg_dir()
+t = C.header("ir-zig", d, "rust", "zigemit", "zig")
+tally = C.Tally()
+with tempfile.TemporaryDirectory() as w:
+    w = pathlib.Path(w)
+    for u in C.units(d):
+        n = u.stem
+        ir = C.run([t["rust"] / "irdump", "whole", u, "Program"])
+        if ir.returncode != 0:
+            tally.verdict(n, "refused", "irdump: " + (C.text(ir.stderr).strip().splitlines() or ["?"])[-1][:70])
+            continue
+        (w / f"{n}.ir").write_bytes(ir.stdout)
+        e = C.run([t["zigemit"] / "zigemit"], stdin=w / f"{n}.ir")
+        zig = w / f"{n}.zig"
+        zig.write_bytes(e.stderr)
+        if not e.stderr or e.stderr[:14].startswith(b"CODEGEN-HALTED"):
+            tally.verdict(n, "refused", "zigemit emitted no zig")
+            continue
+        b = C.run([t["zig"], "build-exe", zig.name, f"-femit-bin={n}.exe"], cwd=w)
+        if b.returncode != 0:
+            err = [l for l in C.text(b.stderr).splitlines() if "error:" in l]
+            tally.verdict(n, "build-failed", (err[0] if err else C.text(b.stderr)[:70])[:90])
+            continue
+        x = C.run([w / f"{n}.exe"])
+        got = C.text(x.stderr)
+        if got == C.expected(u):
+            tally.verdict(n, "match")
+        else:
+            tally.verdict(n, "differs", f"got {len(got)}B, want {len(C.expected(u))}B")
+sys.exit(tally.close())

@@ -1,0 +1,20 @@
+(chapter "Program"
+  (title "FieldGuardRefine")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops)
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (rec-def "Byte" (tparams) (fields (rec-field "val" (a-bounded (a-named "Integer") 0 255 ov-error))))
+  (rec-def "Nibble" (tparams) (fields (rec-field "n" (a-bounded (a-named "Integer") 0 15 ov-error)))))
+  (defs
+  (def "guarded-field" "FieldGuardRefine" (params (param "b" (record-ty "Byte" (args)))) (fn (record-ty "Byte" (args)) int-default) (if (binary le (field-access (name "b" (record-ty "Byte" (args))) "val/0" (int 0 255 ov-error)) (int-lit 15) boolean) (field-access (record "Nibble" (fields (field-val "n" (field-access (name "b" (record-ty "Byte" (args))) "val/0" (int 0 255 ov-error)))) (record-ty "Nibble" (args))) "n/0" (int 0 15 ov-error)) (int-lit 0) int-default) 0 0)
+  (def "guarded-local" "FieldGuardRefine" (params (param "b" (record-ty "Byte" (args)))) (fn (record-ty "Byte" (args)) int-default) (let "v" (int 0 255 ov-error) (field-access (name "b" (record-ty "Byte" (args))) "val/0" (int 0 255 ov-error)) (if (binary le (name "v" (int 0 255 ov-error)) (int-lit 15) boolean) (field-access (record "Nibble" (fields (field-val "n" (name "v" (int 0 255 ov-error)))) (record-ty "Nibble" (args))) "n/0" (int 0 15 ov-error)) (int-lit 0) int-default)) 0 0)
+  (def "opening" "FieldGuardRefine" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 454))) (apply (name "integer-to-text" (fn int-default text)) (apply (name "guarded-field" (fn (record-ty "Byte" (args)) int-default)) (record "Byte" (fields (field-val "val" (int-lit 9))) (record-ty "Byte" (args))) int-default) text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 463))) (apply (name "integer-to-text" (fn int-default text)) (apply (name "guarded-local" (fn (record-ty "Byte" (args)) int-default)) (record "Byte" (fields (field-val "val" (int-lit 9))) (record-ty "Byte" (args))) int-default) text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 472))) (apply (name "integer-to-text" (fn int-default text)) (apply (name "guarded-field" (fn (record-ty "Byte" (args)) int-default)) (record "Byte" (fields (field-val "val" (int-lit 200))) (record-ty "Byte" (args))) int-default) text) nothing))) nothing) 0 0)))

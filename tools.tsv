@@ -1,0 +1,10 @@
+# The tools the arms run, one `name<TAB>path` per line; `~` is home.
+# Each is a BUNDLE: an executable beside the provenance that says what it was
+# built from, and every arm prints that line before its numbers. Override one
+# with the upper-case environment variable of the same name (CODEXZIG=...).
+codexzig	~/codexzig
+codexir	~/codexir
+zigemit	~/zigemit
+codexwasm	~/showell_repos/codex-wasm-transpiler
+rust	~/build/rust-target/release
+zig	~/zig-0.16.0/zig

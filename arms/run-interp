@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+"""Run each unit on the Rust interpreter (codexrun) and compare its output to
+the `.expected` beside it. A failure means the interpreter computes the wrong
+value, or refuses a program it should run.
+
+    arms/run-interp <units-dir>
+"""
+import sys
+sys.path.insert(0, __file__.rsplit("/", 1)[0])
+import common as C
+
+d = C.arg_dir()
+t = C.header("run-interp", d, "rust")
+tally = C.Tally()
+for u in C.units(d):
+    r = C.run([t["rust"] / "codexrun", u])
+    if r.returncode != 0:
+        tally.verdict(u.stem, "refused", C.text(r.stderr).strip().splitlines()[-1:][0][:70] if r.stderr else f"exit {r.returncode}")
+    elif C.text(r.stdout) == C.expected(u):
+        tally.verdict(u.stem, "match")
+    else:
+        tally.verdict(u.stem, "differs", f"got {len(r.stdout)}B, want {len(C.expected(u))}B")
+sys.exit(tally.close())
