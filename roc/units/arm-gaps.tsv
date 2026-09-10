@@ -3,8 +3,8 @@
 #
 #   unit<TAB>arm<TAB>issue and what differs
 #
-# roc-iter-drop-if, roc-iter-keep-if and roc-iter-map also fail run-zig (an
-# unresolved variable upstream's frontend mints for a generic lifted closure) and
-# are NOT listed: nothing is filed for them yet, so they stay red until it is.
 roc-alias-empty	run-zig	COMPILER-74 (PR 139): upstream never defaults an unconstrained element variable; the plug refuses the empty list
 roc-poly-nopayload-variant	run-zig	COMPILER-74 (PR 139): the no-payload constructor of a polymorphic sum at an unconstrained use is never defaulted; the plug refuses T287
+roc-iter-map	run-zig	PR 140: a nested closure field carries the record declaration's parameter; the plug refuses T16
+roc-iter-keep-if	run-zig	PR 140: as roc-iter-map
+roc-iter-drop-if	run-zig	PR 140: as roc-iter-map
