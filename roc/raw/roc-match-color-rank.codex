@@ -1,0 +1,45 @@
+Chapter: RocMatchColorRank
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_match_tests.zig, "match-dt:
+ four-tag nominal union dispatches every arm":
+
+     Color := [Red, Green, Blue, Yellow]
+     rank : Color -> I64
+     rank = |c| match c { Red => 1, Green => 2, Blue => 3, Yellow => 4 }
+     main = List.map([Red, Green, Blue, Yellow], rank)      [1, 2, 3, 4]
+
+ The map is a comprehension; the list prints joined with commas.
+
+Section: Types
+
+  Color =
+   | Red
+   | Green
+   | Blue
+   | Yellow
+
+Section: Functions
+
+  rank : Color -> Integer
+  rank (c) =
+   when c
+    is Red -> 1
+    is Green -> 2
+    is Blue -> 3
+    is Yellow -> 4
+
+  join-ints : List Integer, Integer -> Text
+  join-ints (xs) (i) =
+   if i >= list-length xs then ""
+   else if i + 1 == list-length xs then show (list-at xs i)
+   else show (list-at xs i) & ", " & join-ints xs (i + 1)
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   let colors = [Red, Green, Blue, Yellow]
+   in let ranks = for c in colors -> rank c
+   in print-line-uni ("[" & join-ints ranks 0 & "]")
+  end

@@ -1,0 +1,43 @@
+Chapter: RocRecWrapperMatch
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_recursive_data_tests.zig,
+ "inspect: recursive tag payload match issue 8754":
+
+     Tree := [Node(Str, List(Tree)), Text(Str), Wrapper(Tree)]
+     inner : Tree = Text("hello")
+     wrapped : Tree = Wrapper(inner)
+     main = match wrapped {
+         Wrapper(inner_tree) => match inner_tree { Text(_) => 1, Node(_, _) => 2, Wrapper(_) => 3 }
+         _ => 0 }
+
+ Roc answers 1. `Text` is a Codex type name, so the constructor is `Leaf`.
+ The inner match is on a name bound by the outer pattern, which is the
+ shape the Roc issue was about.
+
+Section: Types
+
+  Tree =
+   | Node (Text) (List Tree)
+   | Leaf (Text)
+   | Wrapper (Tree)
+
+Section: Functions
+
+  classify : Tree -> Integer
+  classify (wrapped) =
+   when wrapped
+    is Wrapper (inner-tree) -> when inner-tree
+      is Leaf (ignored) -> 1
+      is Node (ignored) (kids) -> 2
+      is Wrapper (ignored) -> 3
+    is otherwise -> 0
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   let inner = Leaf "hello"
+   in let wrapped = Wrapper inner
+   in print-line-uni (show (classify wrapped))
+  end

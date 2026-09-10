@@ -1,0 +1,51 @@
+Chapter: RocRecRoseTree
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_recursive_data_tests.zig,
+ "inspect: recursive nominal rose tree with children":
+
+     Rose := [Rose(I64, List(Rose))]
+     main = Rose.Rose(1, [Rose.Rose(2, []), Rose.Rose(3, [])])
+
+ Roc inspects `Rose(1, [Rose(2, []), Rose(3, [])])`. The constructor is
+ spelled `Node` here so it does not share the type's name, and the printer
+ spells it back as Roc does. A second line sums the tree, 6.
+
+Section: Types
+
+  Rose =
+   | Node (Integer) (List Rose)
+
+Section: Functions
+
+  rose-text : Rose -> Text
+  rose-text (r) =
+   when r
+    is Node (n) (kids) -> "Rose(" & show n & ", [" & join-rose kids 0 & "])"
+
+  join-rose : List Rose, Integer -> Text
+  join-rose (kids) (i) =
+   if i >= list-length kids then ""
+   else if i + 1 == list-length kids then rose-text (list-at kids i)
+   else rose-text (list-at kids i) & ", " & join-rose kids (i + 1)
+
+  rose-sum : Rose -> Integer
+  rose-sum (r) =
+   when r
+    is Node (n) (kids) -> n + sum-kids kids 0
+
+  sum-kids : List Rose, Integer -> Integer
+  sum-kids (kids) (i) =
+   if i >= list-length kids then 0
+   else rose-sum (list-at kids i) + sum-kids kids (i + 1)
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   let tree = Node 1 [Node 2 [], Node 3 []]
+   in act
+    print-line-uni (rose-text tree)
+    print-line-uni (show (rose-sum tree))
+   end
+  end

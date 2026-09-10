@@ -1,0 +1,20 @@
+(chapter "Program"
+  (title "RocPolyCaptureId")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e"))))))
+  (defs
+  (def "opening" "RocPolyCaptureId" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 454))) (apply (name "show" (fn int-default text)) (apply (apply (name "__lam_0" (fn (fn int-default int-default) (fn int-default int-default))) (name "__lam_1" (fn int-default int-default)) (fn int-default int-default)) (int-lit 41) int-default) text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 468))) (apply (apply (name "__lam_2" (fn (fn text text) (fn text text))) (name "__lam_3" (fn text text)) (fn text text)) (text-lit "ok") text) nothing))) nothing) 0 0)
+  (def "__lam_0" "" (params (param "id" (fn int-default int-default)) (param "x" int-default)) (fn (fn int-default int-default) (fn int-default int-default)) (apply (name "id" (fn int-default int-default)) (name "x" int-default) int-default) 0 0)
+  (def "__lam_1" "" (params (param "y" int-default)) (fn int-default int-default) (name "y" int-default) 0 0)
+  (def "__lam_2" "" (params (param "id" (fn text text)) (param "x" text)) (fn (fn text text) (fn text text)) (apply (name "id" (fn text text)) (name "x" text) text) 0 0)
+  (def "__lam_3" "" (params (param "y" text)) (fn text text) (name "y" text) 0 0)))

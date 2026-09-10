@@ -1,0 +1,2 @@
+Mul(Add(Lit(2), Lit(3)), Neg(Lit(4)))
+-20

@@ -1,0 +1,19 @@
+(chapter "Program"
+  (title "RocMutualEvenOdd")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Functions" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e"))))))
+  (defs
+  (def "even" "RocMutualEvenOdd" (params (param "n" int-default)) (fn int-default boolean) (if (binary eq (name "n" int-default) (int-lit 0) boolean) (bool-lit true) (apply (name "odd" (fn int-default boolean)) (binary sub-int (name "n" int-default) (int-lit 1) int-default) boolean) boolean) 0 0)
+  (def "odd" "RocMutualEvenOdd" (params (param "n" int-default)) (fn int-default boolean) (if (binary eq (name "n" int-default) (int-lit 0) boolean) (bool-lit false) (apply (name "even" (fn int-default boolean)) (binary sub-int (name "n" int-default) (int-lit 1) int-default) boolean) boolean) 0 0)
+  (def "depth" "RocMutualEvenOdd" (params (param "n" int-default)) (fn int-default int-default) (if (binary eq (name "n" int-default) (int-lit 0) boolean) (int-lit 0) (binary add-int (int-lit 1) (apply (name "depth" (fn int-default int-default)) (binary sub-int (name "n" int-default) (int-lit 1) int-default) int-default) int-default) int-default) 0 0)
+  (def "opening" "RocMutualEvenOdd" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 463))) (if (apply (name "even" (fn int-default boolean)) (int-lit 10) boolean) (text-lit "true") (text-lit "false") text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 469))) (if (apply (name "odd" (fn int-default boolean)) (int-lit 11) boolean) (text-lit "true") (text-lit "false") text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 475))) (apply (name "show" (fn int-default text)) (apply (name "depth" (fn int-default int-default)) (int-lit 512) int-default) text) nothing))) nothing) 0 0)))

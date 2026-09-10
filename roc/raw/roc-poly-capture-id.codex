@@ -1,0 +1,21 @@
+Chapter: RocPolyCaptureId
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_polymorphism_tests.zig, the
+ two "captures (polymorphic)" cases:
+
+     ((|id| (|x| id(x)))(|y| y))(41)       41
+     ((|id| (|x| id(x)))(|y| y))("ok")     "ok"
+
+ The identity is passed in as a value and captured by a closure that applies
+ it. Each line is its own instantiation, Integer and Text, so a front end
+ that pins the captured `id` to the first use it sees still has to get the
+ second right on its own.
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   print-line-uni (show (((\id -> (\x -> id x)) (\y -> y)) 41))
+   print-line-uni (((\id -> (\x -> id x)) (\y -> y)) "ok")
+  end

@@ -1,0 +1,50 @@
+Chapter: RocRecArithEval
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_recursive_data_tests.zig,
+ "inspect: recursive nominal arithmetic expr":
+
+     Arith := [Lit(I64), Add(Arith, Arith), Mul(Arith, Arith), Neg(Arith)]
+     main = Arith.Mul(Arith.Add(Arith.Lit(2), Arith.Lit(3)), Arith.Neg(Arith.Lit(4)))
+
+ Roc inspects the value as `Mul(Add(Lit(2), Lit(3)), Neg(Lit(4)))`. Codex has
+ no inspect, so the port writes the printer by hand and ALSO evaluates the
+ tree, which Roc's case does not: a second line, -20, that a wrong
+ constructor order could not fake.
+
+Section: Types
+
+  Arith =
+   | Lit (Integer)
+   | Add (Arith) (Arith)
+   | Mul (Arith) (Arith)
+   | Neg (Arith)
+
+Section: Functions
+
+  arith-text : Arith -> Text
+  arith-text (e) =
+   when e
+    is Lit (n) -> "Lit(" & show n & ")"
+    is Add (a) (b) -> "Add(" & arith-text a & ", " & arith-text b & ")"
+    is Mul (a) (b) -> "Mul(" & arith-text a & ", " & arith-text b & ")"
+    is Neg (a) -> "Neg(" & arith-text a & ")"
+
+  arith-eval : Arith -> Integer
+  arith-eval (e) =
+   when e
+    is Lit (n) -> n
+    is Add (a) (b) -> arith-eval a + arith-eval b
+    is Mul (a) (b) -> arith-eval a * arith-eval b
+    is Neg (a) -> 0 - arith-eval a
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   let tree = Mul (Add (Lit 2) (Lit 3)) (Neg (Lit 4))
+   in act
+    print-line-uni (arith-text tree)
+    print-line-uni (show (arith-eval tree))
+   end
+  end

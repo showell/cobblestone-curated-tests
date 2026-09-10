@@ -1,0 +1,53 @@
+Chapter: RocRecLogicMatch
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_recursive_data_tests.zig,
+ "recursive nominal logic nested match":
+
+     Logic := [True, False, And(Logic, Logic), Or(Logic, Logic), Not(Logic)]
+     main = match Logic.And(Logic.Or(Logic.True, Logic.False), Logic.Not(Logic.False)) {
+         And(Or(True, False), Not(False)) => "ok"
+         _ => "bad"
+     }
+
+ A pattern three constructors deep. `True` and `False` are Codex's Boolean
+ literals, so the constructors are `LTrue` and `LFalse`. A second line
+ evaluates the formula, which is the value the pattern is asserting the
+ shape of.
+
+Section: Types
+
+  Logic =
+   | LTrue
+   | LFalse
+   | And (Logic) (Logic)
+   | Or (Logic) (Logic)
+   | Not (Logic)
+
+Section: Functions
+
+  shape-check : Logic -> Text
+  shape-check (v) =
+   when v
+    is And (Or (LTrue) (LFalse)) (Not (LFalse)) -> "ok"
+    is otherwise -> "bad"
+
+  logic-eval : Logic -> Boolean
+  logic-eval (v) =
+   when v
+    is LTrue -> True
+    is LFalse -> False
+    is And (a) (b) -> if logic-eval a then logic-eval b else False
+    is Or (a) (b) -> if logic-eval a then True else logic-eval b
+    is Not (a) -> if logic-eval a then False else True
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   let formula = And (Or LTrue LFalse) (Not LFalse)
+   in act
+    print-line-uni (shape-check formula)
+    print-line-uni (if logic-eval formula then "true" else "false")
+   end
+  end

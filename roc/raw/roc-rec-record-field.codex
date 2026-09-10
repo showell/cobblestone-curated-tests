@@ -1,0 +1,55 @@
+Chapter: RocRecRecordField
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_recursive_data_tests.zig,
+ "inspect: recursive nominal deeply nested record recursion":
+
+     Type := [Leaf(Str), Node({ value: Str, child: Type })]
+     leaf = Type.Leaf("deep")
+     level1 = Type.Node({ value: "level1", child: leaf })
+     level2 = Type.Node({ value: "level2", child: level1 })
+     main = Type.Node({ value: "level3", child: level2 })
+
+ The recursion passes through a RECORD held by a variant. Codex has no
+ anonymous record, so the payload is a named one, `Level`, and the two types
+ refer to each other. The port prints the chain of values root first and the
+ depth, 3, instead of Roc's inspect form.
+
+Section: Types
+
+  Level = record {
+   value : Text,
+   child : Ty
+  }
+
+  Ty =
+   | Leaf (Text)
+   | Node (Level)
+
+Section: Functions
+
+  chain : Ty -> Text
+  chain (t) =
+   when t
+    is Leaf (s) -> s
+    is Node (lv) -> lv.value & "/" & chain (lv.child)
+
+  depth-of : Ty -> Integer
+  depth-of (t) =
+   when t
+    is Leaf (s) -> 0
+    is Node (lv) -> 1 + depth-of (lv.child)
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   let leaf = Leaf "deep"
+   in let level1 = Node (Level { value = "level1", child = leaf })
+   in let level2 = Node (Level { value = "level2", child = level1 })
+   in let level3 = Node (Level { value = "level3", child = level2 })
+   in act
+    print-line-uni (chain level3)
+    print-line-uni (show (depth-of level3))
+   end
+  end

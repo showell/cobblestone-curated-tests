@@ -1,0 +1,37 @@
+Chapter: RocMutualEvenOdd
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_recursive_data_tests.zig,
+ "inspect: mutually recursive functions" and "inspect: very deep recursion
+ stack behavior":
+
+     even = |n| if n == 0.I64 True else odd(n - 1.I64)
+     odd  = |n| if n == 0.I64 False else even(n - 1.I64)
+     main = (even(10.I64), odd(11.I64))            (True, True)
+
+     depth = |n| if n == 0.I64 0.I64 else 1.I64 + depth(n - 1.I64)
+     main = depth(512.I64)                          512
+
+ Two definitions that each call the other, and one that recurses 512 deep
+ without tail position. Booleans print as `true`/`false`; the tuple is two
+ lines.
+
+Section: Functions
+
+  even : Integer -> Boolean
+  even (n) = if n == 0 then True else odd (n - 1)
+
+  odd : Integer -> Boolean
+  odd (n) = if n == 0 then False else even (n - 1)
+
+  depth : Integer -> Integer
+  depth (n) = if n == 0 then 0 else 1 + depth (n - 1)
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   print-line-uni (if even 10 then "true" else "false")
+   print-line-uni (if odd 11 then "true" else "false")
+   print-line-uni (show (depth 512))
+  end

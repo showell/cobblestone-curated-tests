@@ -32,6 +32,11 @@ any inference left ambiguous, so no hole reaches a plug.
   `eval_interpreter_style_tests.zig`. Roc numeric literals default too, but
   Codex literals are already int-default, so those are not forcing here.
 - Have: `roc-alias-empty` (empty list orphan -> checker default, `4d0c8e4`).
+- Ported 2026-09-10 (`roc/raw/` holds the unresolved chapters): `roc-rec-arith-eval`,
+  `roc-rec-json-list`, `roc-rec-rose-tree`, `roc-rec-logic-match`, `roc-rec-wrapper-match`,
+  `roc-rec-record-field`, `roc-mutual-even-odd` (recursive data, phase 2),
+  `roc-match-color-rank` (match tests), `roc-poly-closures`, `roc-poly-capture-id`
+  (polymorphism, phase 3). All ten green on every arm, both front ends agreeing.
 - Custom probes fill the shapes Roc's file does not isolate.
 
 ### 2. bidirectional check (expected type flows down)

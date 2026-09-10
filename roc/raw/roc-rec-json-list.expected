@@ -1,0 +1,5 @@
+Null
+Bool(True)
+Number(42)
+Array([])
+Array([Number(1), Null, Array([])])

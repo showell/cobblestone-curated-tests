@@ -1,0 +1,20 @@
+(chapter "Program"
+  (title "RocRecRecordField")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Types" "Functions" "Entry")
+  (ctors "Node" "Leaf" "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (rec-def "Level" (tparams) (fields (rec-field "value" (a-named "Text")) (rec-field "child" (a-named "Ty"))))
+  (var-def "Ty" (tparams) (ctors (var-ctor "Leaf" (fields (a-named "Text"))) (var-ctor "Node" (fields (a-named "Level"))))))
+  (defs
+  (def "chain" "RocRecRecordField" (params (param "t" (sum "Ty" (args)))) (fn (sum "Ty" (args)) text) (match (name "t" (sum "Ty" (args))) (branches (branch (ctor-pat "Leaf" (subs (var-pat "s" text)) (sum "Ty" (args))) (name "s" text) (bool-lit true)) (branch (ctor-pat "Node" (subs (var-pat "lv" (record-ty "Level" (args)))) (sum "Ty" (args))) (binary append-text (binary append-text (field-access (name "lv" (record-ty "Level" (args))) "value/0" text) (text-lit "/") text) (apply (name "chain" (fn (sum "Ty" (args)) text)) (field-access (name "lv" (record-ty "Level" (args))) "child/1" (sum "Ty" (args))) text) text) (bool-lit true))) text) 0 0)
+  (def "depth-of" "RocRecRecordField" (params (param "t" (sum "Ty" (args)))) (fn (sum "Ty" (args)) int-default) (match (name "t" (sum "Ty" (args))) (branches (branch (ctor-pat "Leaf" (subs (var-pat "s" text)) (sum "Ty" (args))) (int-lit 0) (bool-lit true)) (branch (ctor-pat "Node" (subs (var-pat "lv" (record-ty "Level" (args)))) (sum "Ty" (args))) (binary add-int (int-lit 1) (apply (name "depth-of" (fn (sum "Ty" (args)) int-default)) (field-access (name "lv" (record-ty "Level" (args))) "child/1" (sum "Ty" (args))) int-default) int-default) (bool-lit true))) int-default) 0 0)
+  (def "opening" "RocRecRecordField" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (let "leaf" (sum "Ty" (args)) (apply (name "Leaf" (fn text (sum "Ty" (args)))) (text-lit "deep") (sum "Ty" (args))) (let "level1" (sum "Ty" (args)) (apply (name "Node" (fn (record-ty "Level" (args)) (sum "Ty" (args)))) (record "Level" (fields (field-val "value" (text-lit "level1")) (field-val "child" (name "leaf" (sum "Ty" (args))))) (record-ty "Level" (args))) (sum "Ty" (args))) (let "level2" (sum "Ty" (args)) (apply (name "Node" (fn (record-ty "Level" (args)) (sum "Ty" (args)))) (record "Level" (fields (field-val "value" (text-lit "level2")) (field-val "child" (name "level1" (sum "Ty" (args))))) (record-ty "Level" (args))) (sum "Ty" (args))) (let "level3" (sum "Ty" (args)) (apply (name "Node" (fn (record-ty "Level" (args)) (sum "Ty" (args)))) (record "Level" (fields (field-val "value" (text-lit "level3")) (field-val "child" (name "level2" (sum "Ty" (args))))) (record-ty "Level" (args))) (sum "Ty" (args))) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 472))) (apply (name "chain" (fn (sum "Ty" (args)) text)) (name "level3" (sum "Ty" (args))) text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 478))) (apply (name "show" (fn int-default text)) (apply (name "depth-of" (fn (sum "Ty" (args)) int-default)) (name "level3" (sum "Ty" (args))) int-default) text) nothing))) nothing))))))) nothing) 0 0)))

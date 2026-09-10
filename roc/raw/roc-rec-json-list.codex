@@ -1,0 +1,47 @@
+Chapter: RocRecJsonList
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_recursive_data_tests.zig, the
+ four "recursive nominal json" cases, which build
+
+     Json := [Null, Bool(Bool), Number(I64), Array(List(Json))]
+
+ and inspect `Null`, `Bool(True)`, `Number(42)` and `Array([])`. The port
+ prints all four through a hand-written printer, then one value the cases do
+ not build, `Array([Number(1), Null, Array([])])`, because a recursive sum
+ reached only through a List is the shape worth the port.
+
+Section: Types
+
+  Json =
+   | Null
+   | Bool (Boolean)
+   | Number (Integer)
+   | Array (List Json)
+
+Section: Functions
+
+  json-text : Json -> Text
+  json-text (j) =
+   when j
+    is Null -> "Null"
+    is Bool (b) -> if b then "Bool(True)" else "Bool(False)"
+    is Number (n) -> "Number(" & show n & ")"
+    is Array (items) -> "Array([" & join-json items 0 & "])"
+
+  join-json : List Json, Integer -> Text
+  join-json (items) (i) =
+   if i >= list-length items then ""
+   else if i + 1 == list-length items then json-text (list-at items i)
+   else json-text (list-at items i) & ", " & join-json items (i + 1)
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   print-line-uni (json-text Null)
+   print-line-uni (json-text (Bool True))
+   print-line-uni (json-text (Number 42))
+   print-line-uni (json-text (Array []))
+   print-line-uni (json-text (Array [Number 1, Null, Array []]))
+  end

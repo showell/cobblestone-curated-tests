@@ -1,0 +1,32 @@
+Chapter: RocPolyClosures
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_polymorphism_tests.zig, the
+ eight closure-returning cases, one printed line each in file order:
+
+     (|_| (|x| x))(0)(42)                                        42
+     (|_| (|x| x))(0)("hi")                                      "hi"
+     (|n| (|x| n + x))(1)(41)                                    42
+     (|x| (|_| x))("hi")(0)                                      "hi"
+     ((|f| (|x| f(x)))(|n| n + 1))(41)                           42
+     ((|f| (|x| f(f(x))))(|n| n + 1))(40)                        42
+     (((|f| (|g| (|x| f(g(x)))))(|n| n + 1))(|y| y))(41)         42
+     (((|n| (|id| (|x| id(x + n))))(1))(|y| y))(41)              42
+
+ Every lambda is a literal applied where it is written, so each one is
+ lifted with its captures and typed at exactly one use. Roc prints `42.0`
+ where Codex prints `42`; the value is the oracle.
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   print-line-uni (show (((\ignored -> (\x -> x)) 0) 42))
+   print-line-uni (((\ignored -> (\x -> x)) 0) "hi")
+   print-line-uni (show (((\n -> (\x -> n + x)) 1) 41))
+   print-line-uni (((\x -> (\ignored -> x)) "hi") 0)
+   print-line-uni (show (((\f -> (\x -> f x)) (\n -> n + 1)) 41))
+   print-line-uni (show (((\f -> (\x -> f (f x))) (\n -> n + 1)) 40))
+   print-line-uni (show ((((\f -> (\g -> (\x -> f (g x)))) (\n -> n + 1)) (\y -> y)) 41))
+   print-line-uni (show ((((\n -> (\id -> (\x -> id (x + n)))) 1) (\y -> y)) 41))
+  end
