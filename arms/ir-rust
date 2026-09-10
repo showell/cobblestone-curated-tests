@@ -19,7 +19,7 @@ for u in C.units(d):
     if not frozen.is_file():
         tally.verdict(u.stem, "no-frozen-ir", "run arms/freeze-rust-ir")
         continue
-    r = C.run([t["rust"] / "irdump", "whole", u, "Program"])
+    r = C.run([t["rust"] / "irdump", "whole", u])
     if r.returncode != 0:
         tally.verdict(u.stem, "refused", (C.text(r.stderr).strip().splitlines() or ["?"])[-1][:70])
     elif r.stdout == frozen.read_bytes():

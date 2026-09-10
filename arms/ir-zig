@@ -15,11 +15,12 @@ import common as C
 d = C.arg_dir()
 t = C.header("ir-zig", d, "rust", "zigemit", "zig")
 tally = C.Tally()
+gaps = C.gaps(d)
 with tempfile.TemporaryDirectory() as w:
     w = pathlib.Path(w)
     for u in C.units(d):
         n = u.stem
-        ir = C.run([t["rust"] / "irdump", "whole", u, "Program"])
+        ir = C.run([t["rust"] / "irdump", "whole", u])
         if ir.returncode != 0:
             tally.verdict(n, "refused", "irdump: " + (C.text(ir.stderr).strip().splitlines() or ["?"])[-1][:70])
             continue
@@ -40,5 +41,5 @@ with tempfile.TemporaryDirectory() as w:
         if got == C.expected(u):
             tally.verdict(n, "match")
         else:
-            tally.verdict(n, "differs", f"got {len(got)}B, want {len(C.expected(u))}B")
+            C.differs(tally, n, "ir-zig", f"got {len(got)}B, want {len(C.expected(u))}B", gaps)
 sys.exit(tally.close())

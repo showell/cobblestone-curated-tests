@@ -68,6 +68,31 @@ def provenance(name, path):
     return f"{name:<9} {pin}"
 
 
+def gaps(dirpath):
+    """-> {name: (arm, why)} from `arm-gaps.tsv` in the units directory: units
+    whose output through a named arm differs for a reason that is FILED and is
+    not ours. The `.expected` stays the CORRECT value; the arm is what is
+    wrong, and the verdict is `differs-filed`, reported and never fatal."""
+    out = {}
+    f = pathlib.Path(dirpath) / "arm-gaps.tsv"
+    if f.is_file():
+        for line in f.read_text().splitlines():
+            line = line.split("#")[0].rstrip()
+            if line.strip():
+                name, arm, why = (line.split("\t", 2) + ["", ""])[:3]
+                out.setdefault(name.strip(), {})[arm.strip()] = why.strip()
+    return out
+
+
+def differs(tally, name, arm, note, gapmap):
+    """A wrong output is `differs`, or `differs-filed` when the gap file names it for this arm."""
+    filed = gapmap.get(name, {}).get(arm)
+    if filed is not None:
+        tally.verdict(name, "differs-filed", filed[:70])
+    else:
+        tally.verdict(name, "differs", note)
+
+
 def units(dirpath):
     d = pathlib.Path(dirpath)
     found = sorted(d.glob("*.codex"))
@@ -111,7 +136,7 @@ def text(b):
 class Tally:
     """Per-unit verdicts and the closing line. `bad` verdicts fail the run."""
 
-    def __init__(self, good=("match", "agree"), soft=()):
+    def __init__(self, good=("match", "agree"), soft=("differs-filed",)):
         self.counts = {}
         self.good, self.soft = set(good), set(soft)
 

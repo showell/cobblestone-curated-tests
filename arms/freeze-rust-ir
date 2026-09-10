@@ -2,9 +2,7 @@
 """Freeze OUR frontend's IR for each unit: irdump writes `<name>.rust.ir`
 beside it. This is the Rust compiler's own answer and it changes only on
 purpose: ir-rust fails the moment irdump stops reproducing it, and the
-re-freeze that follows a deliberate change is reviewed as a diff. The chapter
-is named `Program`, as codexir's harness names it, so the two frozen files
-differ only where the frontends do.
+re-freeze that follows a deliberate change is reviewed as a diff.
 
     arms/freeze-rust-ir <units-dir>
 """
@@ -16,7 +14,7 @@ d = C.arg_dir()
 t = C.header("freeze-rust-ir", d, "rust")
 tally = C.Tally(good=("frozen", "unchanged"))
 for u in C.units(d):
-    r = C.run([t["rust"] / "irdump", "whole", u, "Program"])
+    r = C.run([t["rust"] / "irdump", "whole", u])
     C.freeze(tally, u, u.with_suffix(".rust.ir"), r.stdout if r.returncode == 0 else r.stderr,
              r.returncode == 0)
 sys.exit(tally.close())

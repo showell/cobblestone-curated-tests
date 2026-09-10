@@ -12,6 +12,7 @@ import common as C
 d = C.arg_dir()
 t = C.header("run-interp", d, "rust")
 tally = C.Tally()
+gaps = C.gaps(d)
 for u in C.units(d):
     r = C.run([t["rust"] / "codexrun", u])
     if r.returncode != 0:
@@ -19,5 +20,5 @@ for u in C.units(d):
     elif C.text(r.stdout) == C.expected(u):
         tally.verdict(u.stem, "match")
     else:
-        tally.verdict(u.stem, "differs", f"got {len(r.stdout)}B, want {len(C.expected(u))}B")
+        C.differs(tally, u.stem, "run-interp", f"got {len(r.stdout)}B, want {len(C.expected(u))}B", gaps)
 sys.exit(tally.close())

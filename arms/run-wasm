@@ -33,5 +33,21 @@ with tempfile.TemporaryDirectory() as w:
         raise SystemExit(f"{len(missing)} unit(s) have no frozen IR (run arms/freeze-upstream-ir): {' '.join(missing[:5])}")
     env = dict(os.environ, CODEXZIG=str(t["codexzig"] / "codexzig"), COBBLESTONE_ROOT=checkout,
                ZIG=str(t["zig"]))
-    r = subprocess.run([str(t["codexwasm"] / "corpus_sweep.py"), "--corpus", str(w), "--tests", d], env=env)
-    sys.exit(r.returncode)
+    r = subprocess.run([str(t["codexwasm"] / "corpus_sweep.py"), "--corpus", str(w), "--tests", d],
+                       env=env, capture_output=True, text=True)
+    print(r.stdout, end="")
+    print(r.stderr, end="", file=sys.stderr)
+    # The sweep names what differed on one line; a unit filed in arm-gaps.tsv
+    # for this arm is reported as such and does not fail the run.
+    differ = []
+    for l in r.stdout.splitlines():
+        if "DIFFER:" in l:
+            differ = l.split("DIFFER:", 1)[1].split()
+    gaps = C.gaps(d)
+    unfiled = [n for n in differ if "run-wasm" not in gaps.get(n, {})]
+    for n in differ:
+        if n not in unfiled:
+            print(f"{n:<34} differs-filed  {gaps[n]['run-wasm'][:70]}")
+    if unfiled:
+        print(f"\nUNFILED differ: {' '.join(unfiled)}")
+    sys.exit(1 if unfiled or (r.returncode != 0 and not differ) else 0)
