@@ -29,6 +29,7 @@ frontend as a native binary). The suffix names what does the work.
 | `run-zig.sh` | the program, as a native binary from the zig plug (`codexzig` → `zig build-exe`) | `.expected` | the zig plug is wrong, or refuses a type it should accept |
 | `ir-irdump.sh` | `irdump` (Rust `.codex` → IR) | `codexir` | our Rust frontend disagrees with upstream's |
 | `ir-interp.sh` | the Codex frontend, interpreted by `codexrun`, → IR | `codexir` | our interpreter runs the frontend wrong |
+| `ir-zig.sh` | the program, as a native binary from OUR IR (`irdump` → `zigemit` → `zig build-exe`) | `.expected` | our frontend left a type unresolved, or lowered it wrong |
 
 `run-wasm.sh` builds its module from upstream's IR, so it tests the plug, not
 the frontend. `ir-irdump.sh` and `ir-interp.sh` never execute the program.
@@ -37,6 +38,13 @@ the frontend. `ir-irdump.sh` and `ir-interp.sh` never execute the program.
 `zig build-exe` refuses a program whose types the plug or the frontend left
 unresolved, so BUILD-FAILED catches what the interpreter and wasm arms (which
 tolerate an unresolved type) run straight past.
+
+`ir-zig.sh` is that same strictness applied to our own frontend: the plug reads
+`irdump`'s IR instead of upstream's, so a hole our checker left is a
+BUILD-FAILED here and nowhere else -- `ir-irdump.sh` cannot see a hole both
+frontends share, and the interpreter erases types. It is the type oracle the
+Rust compiler is graded by as the reference; `run-zig.sh` is the attribution
+(does upstream's whole pipeline share the break?).
 
 Each arm names the `codexir` pin it grades against (`oracle_pin.sh`), so an arm
 cannot silently drift to a different language than the oracle.
