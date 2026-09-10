@@ -22,24 +22,24 @@ with tempfile.TemporaryDirectory() as w:
         n = u.stem
         ir = C.run([t["rust"] / "irdump", "whole", u])
         if ir.returncode != 0:
-            tally.verdict(n, "refused", "irdump: " + (C.text(ir.stderr).strip().splitlines() or ["?"])[-1][:70])
+            C.grade(tally, n, "ir-zig", "refused", "irdump: " + (C.text(ir.stderr).strip().splitlines() or ["?"])[-1][:70], gaps)
             continue
         (w / f"{n}.ir").write_bytes(ir.stdout)
         e = C.run([t["zigemit"] / "zigemit"], stdin=w / f"{n}.ir")
         zig = w / f"{n}.zig"
         zig.write_bytes(e.stderr)
         if not e.stderr or e.stderr[:14].startswith(b"CODEGEN-HALTED"):
-            tally.verdict(n, "refused", "zigemit emitted no zig")
+            C.grade(tally, n, "ir-zig", "refused", "zigemit emitted no zig", gaps)
             continue
         b = C.run([t["zig"], "build-exe", zig.name, f"-femit-bin={n}.exe"], cwd=w)
         if b.returncode != 0:
             err = [l for l in C.text(b.stderr).splitlines() if "error:" in l]
-            tally.verdict(n, "build-failed", (err[0] if err else C.text(b.stderr)[:70])[:90])
+            C.grade(tally, n, "ir-zig", "build-failed", (err[0] if err else C.text(b.stderr)[:70])[:90], gaps)
             continue
         x = C.run([w / f"{n}.exe"])
         got = C.text(x.stderr)
         if got == C.expected(u):
             tally.verdict(n, "match")
         else:
-            C.differs(tally, n, "ir-zig", f"got {len(got)}B, want {len(C.expected(u))}B", gaps)
+            C.grade(tally, n, "ir-zig", "differs", f"got {len(got)}B, want {len(C.expected(u))}B", gaps)
 sys.exit(tally.close())

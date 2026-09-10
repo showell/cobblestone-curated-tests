@@ -23,17 +23,17 @@ with tempfile.TemporaryDirectory() as w:
         zig = w / f"{n}.zig"
         zig.write_bytes(r.stderr)
         if not r.stderr or r.stderr[:14].startswith(b"CODEGEN-HALTED"):
-            tally.verdict(n, "refused", C.text(r.stderr[:80]).strip().splitlines()[:1][0] if r.stderr else "no zig emitted")
+            C.grade(tally, n, "run-zig", "refused", C.text(r.stderr[:80]).strip().splitlines()[:1][0] if r.stderr else "no zig emitted", gaps)
             continue
         b = C.run([t["zig"], "build-exe", zig.name, f"-femit-bin={n}.exe"], cwd=w)
         if b.returncode != 0:
             err = [l for l in C.text(b.stderr).splitlines() if "error:" in l]
-            tally.verdict(n, "build-failed", (err[0] if err else C.text(b.stderr)[:70])[:90])
+            C.grade(tally, n, "run-zig", "build-failed", (err[0] if err else C.text(b.stderr)[:70])[:90], gaps)
             continue
         x = C.run([w / f"{n}.exe"])
         got = C.text(x.stderr)
         if got == C.expected(u):
             tally.verdict(n, "match")
         else:
-            C.differs(tally, n, "run-zig", f"got {len(got)}B, want {len(C.expected(u))}B", gaps)
+            C.grade(tally, n, "run-zig", "differs", f"got {len(got)}B, want {len(C.expected(u))}B", gaps)
 sys.exit(tally.close())

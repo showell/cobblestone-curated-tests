@@ -84,13 +84,13 @@ def gaps(dirpath):
     return out
 
 
-def differs(tally, name, arm, note, gapmap):
-    """A wrong output is `differs`, or `differs-filed` when the gap file names it for this arm."""
+def grade(tally, name, arm, verdict, note, gapmap):
+    """A bad verdict, or `<verdict>-filed` when the gap file names this unit for this arm."""
     filed = gapmap.get(name, {}).get(arm)
     if filed is not None:
-        tally.verdict(name, "differs-filed", filed[:70])
+        tally.verdict(name, verdict + "-filed", filed[:70])
     else:
-        tally.verdict(name, "differs", note)
+        tally.verdict(name, verdict, note)
 
 
 def units(dirpath):
@@ -136,20 +136,23 @@ def text(b):
 class Tally:
     """Per-unit verdicts and the closing line. `bad` verdicts fail the run."""
 
-    def __init__(self, good=("match", "agree"), soft=("differs-filed",)):
+    def __init__(self, good=("match", "agree"), soft=()):
         self.counts = {}
         self.good, self.soft = set(good), set(soft)
 
+    def is_soft(self, verdict):
+        return verdict in self.soft or verdict.endswith("-filed")
+
     def verdict(self, name, verdict, note=""):
         self.counts[verdict] = self.counts.get(verdict, 0) + 1
-        shown = verdict if verdict in self.good or verdict in self.soft else verdict.upper()
+        shown = verdict if verdict in self.good or self.is_soft(verdict) else verdict.upper()
         print(f"{name:<34} {shown:<14} {note}".rstrip(), flush=True)
 
     def close(self):
         total = sum(self.counts.values())
         parts = ", ".join(f"{v} {k}" for k, v in sorted(self.counts.items(), key=lambda kv: -kv[1]))
         print(f"\n{parts}, of {total}")
-        bad = sum(v for k, v in self.counts.items() if k not in self.good and k not in self.soft)
+        bad = sum(v for k, v in self.counts.items() if k not in self.good and not self.is_soft(k))
         return 0 if bad == 0 else 1
 
 

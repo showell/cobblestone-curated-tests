@@ -20,5 +20,5 @@ for u in C.units(d):
     elif C.text(r.stdout) == C.expected(u):
         tally.verdict(u.stem, "match")
     else:
-        C.differs(tally, u.stem, "run-interp", f"got {len(r.stdout)}B, want {len(C.expected(u))}B", gaps)
+        C.grade(tally, u.stem, "run-interp", "differs", f"got {len(r.stdout)}B, want {len(C.expected(u))}B", gaps)
 sys.exit(tally.close())
