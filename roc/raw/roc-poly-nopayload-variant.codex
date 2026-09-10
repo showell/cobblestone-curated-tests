@@ -1,0 +1,31 @@
+Chapter: RocPolyNopayloadVariant
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_issue_tests.zig, "issue 9502:
+ static dispatch on no-payload variant of polymorphic nominal evaluates":
+
+     Foo(a) := [Bar(a), Baz].{ inspect = |_foo| "ok" }
+     main = Foo.inspect(Baz)                                      "ok"
+
+ The no-payload constructor of a polymorphic sum is passed where nothing
+ constrains the parameter. The port adds a second line that DOES constrain
+ it, through `Bar 1`, so the two uses sit side by side.
+
+Section: Types
+
+  Foo (a) =
+   | Bar (a)
+   | Baz
+
+Section: Functions
+
+  inspect-foo : Foo a -> Text
+  inspect-foo (ignored) = "ok"
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   print-line-uni (inspect-foo Baz)
+   print-line-uni (inspect-foo (Bar 1))
+  end

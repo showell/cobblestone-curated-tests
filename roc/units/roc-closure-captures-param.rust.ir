@@ -1,0 +1,21 @@
+(chapter "Program"
+  (title "RocClosureCapturesParam")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Functions" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e"))))))
+  (defs
+  (def "ten" "RocClosureCapturesParam" (params) int-default (int-lit 10) 0 0)
+  (def "process" "RocClosureCapturesParam" (params (param "y" int-default) (param "ignored" int-default)) (fn int-default (fn int-default (list int-default))) (list-expr (elems (name "ten" int-default) (name "y" int-default)) int-default) 0 0)
+  (def "join-ints" "RocClosureCapturesParam" (params (param "xs" (list int-default)) (param "i" int-default)) (fn (list int-default) (fn int-default text)) (if (binary ge (name "i" int-default) (apply (name "list-length" (fn (list int-default) int-default)) (name "xs" (list int-default)) int-default) boolean) (text-lit "") (if (binary eq (binary add-int (name "i" int-default) (int-lit 1) int-default) (apply (name "list-length" (fn (list int-default) int-default)) (name "xs" (list int-default)) int-default) boolean) (apply (name "show" (fn int-default text)) (apply (apply (name "list-at" (fn (list int-default) (fn int-default int-default))) (name "xs" (list int-default)) (fn int-default int-default)) (name "i" int-default) int-default) text) (binary append-text (binary append-text (apply (name "show" (fn int-default text)) (apply (apply (name "list-at" (fn (list int-default) (fn int-default int-default))) (name "xs" (list int-default)) (fn int-default int-default)) (name "i" int-default) int-default) text) (text-lit ", ") text) (apply (apply (name "join-ints" (fn (list int-default) (fn int-default text))) (name "xs" (list int-default)) (fn int-default text)) (binary add-int (name "i" int-default) (int-lit 1) int-default) text) text) text) text) 0 0)
+  (def "opening" "RocClosureCapturesParam" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 485))) (apply (name "show" (fn int-default text)) (apply (name "__lam_1" (fn int-default int-default)) (int-lit 1) int-default) text) nothing)) (do-exec (let "f" (fn int-default (list int-default)) (apply (name "process" (fn int-default (fn int-default (list int-default)))) (int-lit 1) (fn int-default (list int-default))) (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 500))) (binary append-text (binary append-text (text-lit "[") (apply (apply (name "join-ints" (fn (list int-default) (fn int-default text))) (apply (name "f" (fn int-default (list int-default))) (int-lit 0) (list int-default)) (fn int-default text)) (int-lit 0) text) text) (text-lit "]") text) nothing)))) nothing) 0 0)
+  (def "__lam_0" "" (params (param "x" int-default) (param "ignored" int-default)) (fn int-default (fn int-default int-default)) (name "x" int-default) 0 0)
+  (def "__lam_1" "" (params (param "x" int-default)) (fn int-default int-default) (let "g" (fn int-default int-default) (apply (name "__lam_0" (fn int-default (fn int-default int-default))) (name "x" int-default) (fn int-default int-default)) (apply (name "g" (fn int-default int-default)) (int-lit 0) int-default)) 0 0)))

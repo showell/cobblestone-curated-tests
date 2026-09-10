@@ -1,0 +1,17 @@
+(chapter "Program"
+  (title "RocPolyListLen")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Functions" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e"))))))
+  (defs
+  (def "foo" "RocPolyListLen" (params (param "list" (list (tvar 41)))) (fn (list (tvar 41)) int-default) (let "idx" int-default (apply (name "list-length" (fn (list (tvar 41)) int-default)) (name "list" (list (tvar 41))) int-default) (name "idx" int-default)) 0 0)
+  (def "opening" "RocPolyListLen" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 457))) (apply (name "show" (fn int-default text)) (apply (name "foo" (fn (list int-default) int-default)) (list-expr (elems (int-lit 0)) int-default) int-default) text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 466))) (apply (name "show" (fn int-default text)) (apply (name "foo" (fn (list text) int-default)) (list-expr (elems (text-lit "a") (text-lit "b")) text) int-default) text) nothing))) nothing) 0 0)))

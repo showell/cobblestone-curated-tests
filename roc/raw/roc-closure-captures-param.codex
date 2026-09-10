@@ -1,0 +1,39 @@
+Chapter: RocClosureCapturesParam
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_regression_repros.zig, B024
+ "nested closure captures enclosing lambda parameter" and B052 "stored
+ returned closure preserves captured values":
+
+     main = (|x| { g = || x   g() })(1.I64)                       1
+
+     x : U8 = 10
+     process = |y| |_| [x, y]
+     main = { f = process(1.U8)   f(0.U8) }                        [10, 1]
+
+ The first closure is nullary in Roc and takes an ignored Integer here. The
+ second captures a top-level constant and a parameter, is stored, and is
+ entered later; the list prints joined.
+
+Section: Functions
+
+  ten : Integer
+  ten = 10
+
+  process : Integer -> (Integer -> List Integer)
+  process (y) = \ignored -> [ten, y]
+
+  join-ints : List Integer, Integer -> Text
+  join-ints (xs) (i) =
+   if i >= list-length xs then ""
+   else if i + 1 == list-length xs then show (list-at xs i)
+   else show (list-at xs i) & ", " & join-ints xs (i + 1)
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   print-line-uni (show ((\x -> let g = \ignored -> x in g 0) 1))
+   let f = process 1
+   in print-line-uni ("[" & join-ints (f 0) 0 & "]")
+  end

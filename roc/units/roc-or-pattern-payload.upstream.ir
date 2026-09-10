@@ -1,0 +1,18 @@
+(chapter "Program"
+  (title "RocOrPatternPayload")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Types" "Functions" "Entry")
+  (ctors "Err" "Ok" "MkTup2" "MkTup3" "MkTup4" "MkTup5")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (var-def "Res" (tparams "a" "e") (ctors (var-ctor "Ok" (fields (a-named "a"))) (var-ctor "Err" (fields (a-named "e"))))))
+  (defs
+  (def "either" "RocOrPatternPayload" (params (param "v" (ctd "Res" (args int-default int-default)))) (fn (ctd "Res" (args int-default int-default)) int-default) (match (name "v" (ctd "Res" (args int-default int-default))) (branches (branch (ctor-pat "Ok" (subs (var-pat "x" int-default)) (ctd "Res" (args int-default int-default))) (name "x" int-default) (bool-lit true)) (branch (ctor-pat "Err" (subs (var-pat "x" int-default)) (ctd "Res" (args int-default int-default))) (name "x" int-default) (bool-lit true))) int-default) 0 0)
+  (def "opening" "RocOrPatternPayload" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 454))) (apply (name "show" (fn int-default text)) (apply (name "either" (fn (ctd "Res" (args int-default int-default)) int-default)) (apply (name "Err" (fn int-default (ctd "Res" (args int-default int-default)))) (int-lit 2) (ctd "Res" (args int-default int-default))) int-default) text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 466))) (apply (name "show" (fn int-default text)) (apply (name "either" (fn (ctd "Res" (args int-default int-default)) int-default)) (apply (name "Ok" (fn int-default (ctd "Res" (args int-default int-default)))) (int-lit 5) (ctd "Res" (args int-default int-default))) int-default) text) nothing))) nothing) 0 0)))

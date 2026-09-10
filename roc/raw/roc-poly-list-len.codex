@@ -1,0 +1,27 @@
+Chapter: RocPolyListLen
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_issue_tests.zig, "issue 9390:
+ var initialized from polymorphic list.len reads back as U64":
+
+     foo : List(a) -> U64
+     foo = |list| { var $idx = list.len()   $idx }
+     main = foo([0])                                              1
+
+ A polymorphic builtin's result bound by a `let` inside a polymorphic
+ definition, then read back. Called at two element types.
+
+Section: Functions
+
+  foo : List a -> Integer
+  foo (list) =
+   let idx = list-length list
+   in idx
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   print-line-uni (show (foo [0]))
+   print-line-uni (show (foo ["a", "b"]))
+  end

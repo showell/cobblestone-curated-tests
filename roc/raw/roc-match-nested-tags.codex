@@ -1,0 +1,36 @@
+Chapter: RocMatchNestedTags
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_match_tests.zig, "match-dt:
+ tag payloads destructure through nested tags":
+
+     describe : Try(Try(I64, Str), I64) -> I64
+     describe = |v| match v { Ok(Ok(n)) => n, Ok(Err(_)) => -1, Err(code) => code * 10 }
+     main = (describe(Ok(Ok(7))), describe(Ok(Err("x"))), describe(Err(4)))     (7, -1, 40)
+
+ Roc's `Try` is spelled `Res` here, a two-parameter sum nested in itself at
+ two different instantiations. The tuple is three lines.
+
+Section: Types
+
+  Res (a) (e) =
+   | Ok (a)
+   | Err (e)
+
+Section: Functions
+
+  describe : Res (Res Integer Text) Integer -> Integer
+  describe (v) =
+   when v
+    is Ok (Ok (n)) -> n
+    is Ok (Err (ignored)) -> 0 - 1
+    is Err (code) -> code * 10
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   print-line-uni (show (describe (Ok (Ok 7))))
+   print-line-uni (show (describe (Ok (Err "x"))))
+   print-line-uni (show (describe (Err 4)))
+  end

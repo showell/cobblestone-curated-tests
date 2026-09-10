@@ -1,0 +1,40 @@
+Chapter: RocMatchMultiPayload
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_match_tests.zig, "match-dt:
+ multi-payload tag binds all payloads in order":
+
+     Shape := [Rect(I64, I64), Circle(I64), Point]
+     area_ish = |s| match s { Rect(w, h) => w * h, Circle(r) => r * r * 3, Point => 0 }
+     main = List.map([Rect(3, 4), Circle(2), Point], area_ish)       [12, 12, 0]
+
+Section: Types
+
+  Shape =
+   | Rect (Integer) (Integer)
+   | Circle (Integer)
+   | Point
+
+Section: Functions
+
+  area-ish : Shape -> Integer
+  area-ish (s) =
+   when s
+    is Rect (w) (h) -> w * h
+    is Circle (r) -> r * r * 3
+    is Point -> 0
+
+  join-ints : List Integer, Integer -> Text
+  join-ints (xs) (i) =
+   if i >= list-length xs then ""
+   else if i + 1 == list-length xs then show (list-at xs i)
+   else show (list-at xs i) & ", " & join-ints xs (i + 1)
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   let shapes = [Rect 3 4, Circle 2, Point]
+   in let areas = for s in shapes -> area-ish s
+   in print-line-uni ("[" & join-ints areas 0 & "]")
+  end

@@ -1,0 +1,31 @@
+Chapter: RocOrPatternPayload
+  cites Foreword chapter Console
+
+ After roc-lang/roc, src/eval/test/eval_regression_repros.zig, B036
+ "or-pattern alternatives bind the same names", which Roc REJECTS when the
+ alternatives bind different names (`Ok(x) | Err(y) => x`). This is the
+ accepted sibling: both alternatives bind the same name, and the arm reads
+ it.
+
+     match Err(2) { Ok(x) | Err(x) => x }                         2
+
+Section: Types
+
+  Res (a) (e) =
+   | Ok (a)
+   | Err (e)
+
+Section: Functions
+
+  either : Res Integer Integer -> Integer
+  either (v) =
+   when v
+    is Ok (x) | Err (x) -> x
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   print-line-uni (show (either (Err 2)))
+   print-line-uni (show (either (Ok 5)))
+  end

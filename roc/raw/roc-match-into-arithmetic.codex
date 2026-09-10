@@ -1,0 +1,34 @@
+Chapter: RocMatchIntoArithmetic
+  cites Foreword chapter Console
+
+ Ported from roc-lang/roc, src/eval/test/eval_match_tests.zig, "match-dt:
+ match result flows into surrounding arithmetic":
+
+     f : Try(I64, {}) -> I64
+     f = |v| 1 + (match v { Ok(n) => n * 2, Err({}) => -10 }) * 10
+     main = (f(Ok(3)), f(Err({})))                        (61, -99)
+
+ The `when` is an operand, parenthesised inside `1 + (...) * 10`. Roc's
+ empty-record error payload is an Integer here, never read.
+
+Section: Types
+
+  Res (a) (e) =
+   | Ok (a)
+   | Err (e)
+
+Section: Functions
+
+  f : Res Integer Integer -> Integer
+  f (v) =
+   1 + (when v
+    is Ok (n) -> n * 2
+    is Err (ignored) -> 0 - 10) * 10
+
+Section: Entry
+
+  opening : [Console] Nothing
+  opening = act
+   print-line-uni (show (f (Ok 3)))
+   print-line-uni (show (f (Err 0)))
+  end

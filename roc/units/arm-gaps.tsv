@@ -7,3 +7,4 @@
 # unresolved variable upstream's frontend mints for a generic lifted closure) and
 # are NOT listed: nothing is filed for them yet, so they stay red until it is.
 roc-alias-empty	run-zig	COMPILER-74 (PR 139): upstream never defaults an unconstrained element variable; the plug refuses the empty list
+roc-poly-nopayload-variant	run-zig	COMPILER-74 (PR 139): the no-payload constructor of a polymorphic sum at an unconstrained use is never defaulted; the plug refuses T287

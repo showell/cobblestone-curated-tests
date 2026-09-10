@@ -1,0 +1,18 @@
+(chapter "Program"
+  (title "RocPolyNopayloadVariant")
+  (prose "")
+  (pblocks)
+  (anns)
+  (sections "Construction" "Slicing" "Slicing(extended)" "Map and Fold" "Filter and Search" "Definitions" "Definitions" "Types" "Functions" "Entry")
+  (ctors "MkTup2" "MkTup3" "MkTup4" "MkTup5" "Bar" "Baz")
+  (eff-ops "print-line-uni" "read-line")
+  (grounds)
+  (type-defs
+  (var-def "Tup2" (tparams "a" "b") (ctors (var-ctor "MkTup2" (fields (a-named "a") (a-named "b")))))
+  (var-def "Tup3" (tparams "a" "b" "c") (ctors (var-ctor "MkTup3" (fields (a-named "a") (a-named "b") (a-named "c")))))
+  (var-def "Tup4" (tparams "a" "b" "c" "d") (ctors (var-ctor "MkTup4" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d")))))
+  (var-def "Tup5" (tparams "a" "b" "c" "d" "e") (ctors (var-ctor "MkTup5" (fields (a-named "a") (a-named "b") (a-named "c") (a-named "d") (a-named "e")))))
+  (var-def "Foo" (tparams "a") (ctors (var-ctor "Bar" (fields (a-named "a"))) (var-ctor "Baz" (fields)))))
+  (defs
+  (def "inspect-foo" "RocPolyNopayloadVariant" (params (param "ignored" (ctd "Foo" (args (tvar 43))))) (fn (ctd "Foo" (args (tvar 43))) text) (text-lit "ok") 0 0)
+  (def "opening" "RocPolyNopayloadVariant" (params) (effectful (effs "Console") (scopes "") nothing) (act (stmts (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 454))) (apply (name "inspect-foo" (fn (ctd "Foo" (args int-default)) text)) (name "Baz" (ctd "Foo" (args int-default))) text) nothing)) (do-exec (apply (name "print-line-uni" (fn text nothing (row (labels (label "Console.Write" "")) "" 460))) (apply (name "inspect-foo" (fn (ctd "Foo" (args int-default)) text)) (apply (name "Bar" (fn int-default (ctd "Foo" (args int-default)))) (int-lit 1) (ctd "Foo" (args int-default))) text) nothing))) nothing) 0 0)))
