@@ -37,6 +37,7 @@ A `.codex` with no `.expected` is refused, not skipped.
 | `run-wasm` | the program as a wasm module from the wasm plug, fed `.upstream.ir` | `.expected` | the wasm plug is wrong |
 | `ir-zig` | the program from OUR IR (`irdump` -> `zigemit` -> `zig build-exe`) | `.expected` | our frontend left a type unresolved, or lowered it wrong |
 | `ir-rust` | `irdump` | `.rust.ir` | our frontend changed what it emits -- a regression, or an intended change that wants a reviewed re-freeze |
+| `ir-interp` | upstream's compiler on the Rust interpreter: `codexrun` running the codexir bundle's `codexir-subject.codex` | `codexir`, built from those same bytes, run live | the interpreter hosts the compiler wrongly |
 | `ir-diff` | nothing; compares the two frozen files | each other | not a failure: a place to read where the reference and upstream disagree (exit 0) |
 
 `run-zig` and `ir-zig` are the strict pair: `zig build-exe` refuses a program

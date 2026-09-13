@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+"""Does the Rust interpreter host the Codex compiler faithfully? codexrun
+interprets `codexir-subject.codex` -- the source the codexir bundle's binary is
+built from, shipped beside it -- reading each unit on stdin, and codexir
+compiles the same unit. Same program, same bytes, same input; only the host
+differs, so DIFFERS is an interpreter defect.
+
+codexir writes its notices to stdout and the IR to stderr (CodexIrHarness says
+why). codexrun has one output and writes both in program order, notices first,
+so it must equal codexir's stdout followed by its stderr -- less the `CX-DECK`
+lines. Those are the zig runtime's own measurement (ZigEmitter's
+`zig-p-cx-deck-report`), written to stdout each time the deck's high-water mark
+grows by another MiB: no Codex program prints them, and codexrun does not.
+They are set aside and counted.
+
+    arms/ir-interp <units-dir>
+"""
+import hashlib
+import sys
+sys.path.insert(0, __file__.rsplit("/", 1)[0])
+import common as C
+
+d = C.arg_dir()
+t = C.header("ir-interp", d, "codexir", "rust")
+subject = t["codexir"] / "codexir-subject.codex"
+receipt = t["codexir"] / "PROVENANCE.oracles"
+named = next((l.split()[1] for l in receipt.read_text().splitlines() if l.startswith("ir-subject")), None)
+if not subject.is_file() or not named:
+    raise SystemExit(f"the codexir bundle at {t['codexir']} ships no codexir-subject.codex named by its receipt")
+if hashlib.sha256(subject.read_bytes()).hexdigest()[:16] != named:
+    raise SystemExit(f"{subject} is not the source its receipt names ({named})")
+tally = C.Tally()
+for u in C.units(d):
+    gold = C.run([t["codexir"] / "codexir"], stdin=u)
+    if not gold.stderr.startswith((b"(chapter", b"CODEGEN-HALTED")):
+        tally.verdict(u.stem, "no-oracle-ir", C.text(gold.stderr).strip()[:60])
+        continue
+    lines = gold.stdout.splitlines(keepends=True)
+    deck = sum(1 for l in lines if l.startswith(b"CX-DECK "))
+    want = b"".join(l for l in lines if not l.startswith(b"CX-DECK ")) + gold.stderr
+    r = C.run([t["rust"] / "codexrun", subject], stdin=u)
+    if r.returncode != 0:
+        # The first line: codexrun names the failure there, then the output so far.
+        tally.verdict(u.stem, "refused", (C.text(r.stderr).strip().splitlines() or ["?"])[0][:70])
+    elif r.stdout == want:
+        halted = gold.stderr.startswith(b"CODEGEN-HALTED")
+        tally.verdict(u.stem, "agree", f"{len(gold.stderr)} bytes" + (", both halt" if halted else "")
+                      + (f", {deck} CX-DECK lines set aside" if deck else ""))
+    else:
+        tally.verdict(u.stem, "differs", f"{len(r.stdout)} vs codexir {len(want)}")
+sys.exit(tally.close())
