@@ -3,12 +3,5 @@
 #
 #   unit<TAB>arm<TAB>issue and what differs
 #
-roc-alias-empty	run-zig	COMPILER-74 (PR 139): upstream never defaults an unconstrained element variable; the plug refuses the empty list
-roc-poly-nopayload-variant	run-zig	COMPILER-74 (PR 139): the no-payload constructor of a polymorphic sum at an unconstrained use is never defaulted; the plug refuses T287
-roc-iter-map	run-zig	PR 140: a nested closure field carries the record declaration's parameter; the plug refuses T16
-roc-iter-keep-if	run-zig	PR 140: as roc-iter-map
-roc-iter-drop-if	run-zig	PR 140: as roc-iter-map
-roc-match-nested-tags	run-zig	PR 141: a nested sub-pattern is read as a wildcard by the plug at 65aaf61e
-roc-match-nested-tags	run-wasm	PR 141: as run-zig
-roc-rec-logic-match	run-zig	PR 141: as roc-match-nested-tags
-roc-rec-logic-match	run-wasm	PR 141: as run-zig
+roc-alias-empty	run-zig	COMPILER-81: an unconstrained empty-list element type reaches typed IR, and the plug refuses "no element type for this empty list"
+roc-poly-nopayload-variant	run-zig	COMPILER-81's class, not its specimen: Baz, the no-payload constructor of Foo a, leaves a unconstrained, and the plug refuses "type variable T287 is not declared at this site"; no upstream row names this shape
