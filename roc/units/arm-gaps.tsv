@@ -4,4 +4,4 @@
 #   unit<TAB>arm<TAB>issue and what differs
 #
 roc-alias-empty	run-zig	COMPILER-81: an unconstrained empty-list element type reaches typed IR, and the plug refuses "no element type for this empty list"
-roc-poly-nopayload-variant	run-zig	COMPILER-81's class, not its specimen: Baz, the no-payload constructor of Foo a, leaves a unconstrained, and the plug refuses "type variable T287 is not declared at this site"; no upstream row names this shape
+roc-poly-nopayload-variant	run-zig	issue 146 (COMPILER-81's class): Baz, the no-payload constructor of Foo a, leaves a unbound in typed IR, and the plug refuses "type variable T287 is not declared at this site"
