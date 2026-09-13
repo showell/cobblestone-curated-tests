@@ -13,12 +13,39 @@ lines. Those are the zig runtime's own measurement (ZigEmitter's
 grows by another MiB: no Codex program prints them, and codexrun does not.
 They are set aside and counted.
 
+**codexrun writes `print-text` raw, as x86 does; codexir, built by the zig plug,
+decodes it.** So codexrun's IR arrives as CCE units, and it is decoded here
+through the alphabet before the comparison. A unit from 128 cannot be decoded
+that way, and makes the unit differ rather than being passed over.
+
     arms/ir-interp <units-dir>
 """
 import hashlib
 import sys
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
 import common as C
+
+# The code point each CCE code 0..127 names: rust-codex-compiler's
+# src/charcode.rs, the zig prelude's `cce_table`.
+CCE_POINTS = [
+    0, 10, 32, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 101, 116, 97, 111, 105, 110, 115, 104, 114, 100, 108,
+    99, 117, 109, 119, 102, 103, 121, 112, 98, 118, 107, 106, 120, 113, 122, 69, 84, 65, 79, 73, 78, 83, 72,
+    82, 68, 76, 67, 85, 77, 87, 70, 71, 89, 80, 66, 86, 75, 74, 88, 81, 90, 46, 44, 33, 63, 58, 59, 39, 34,
+    45, 40, 41, 43, 61, 42, 60, 62, 47, 64, 35, 38, 95, 92, 124, 91, 93, 123, 125, 126, 96, 94, 36, 37, 233,
+    232, 234, 235, 225, 224, 226, 228, 243, 244, 246, 250, 252, 241, 231, 237, 1072, 1086, 1077, 1080, 1085,
+    1090, 1089, 1088, 1074, 1083, 1082, 1084, 1076, 1087, 1091,
+]
+
+
+def decoded(out, n):
+    """codexrun's output with everything after its first `n` bytes (the
+    notices, raw either way) decoded from CCE units; None if a unit is 128 or
+    more."""
+    head, units = out[:n], out[n:]
+    if any(u >= 128 for u in units):
+        return None
+    return head + "".join(chr(CCE_POINTS[u]) for u in units).encode("utf-8")
+
 
 d = C.arg_dir()
 t = C.header("ir-interp", d, "codexir", "rust")
@@ -37,15 +64,19 @@ for u in C.units(d):
         continue
     lines = gold.stdout.splitlines(keepends=True)
     deck = sum(1 for l in lines if l.startswith(b"CX-DECK "))
-    want = b"".join(l for l in lines if not l.startswith(b"CX-DECK ")) + gold.stderr
+    notices = b"".join(l for l in lines if not l.startswith(b"CX-DECK "))
+    want = notices + gold.stderr
     r = C.run([t["rust"] / "codexrun", subject], stdin=u)
+    ours = decoded(r.stdout, len(notices))
     if r.returncode != 0:
         # The first line: codexrun names the failure there, then the output so far.
         tally.verdict(u.stem, "refused", (C.text(r.stderr).strip().splitlines() or ["?"])[0][:70])
-    elif r.stdout == want:
+    elif ours is None:
+        tally.verdict(u.stem, "differs", "codexrun's IR carries a unit from 128")
+    elif ours == want:
         halted = gold.stderr.startswith(b"CODEGEN-HALTED")
         tally.verdict(u.stem, "agree", f"{len(gold.stderr)} bytes" + (", both halt" if halted else "")
                       + (f", {deck} CX-DECK lines set aside" if deck else ""))
     else:
-        tally.verdict(u.stem, "differs", f"{len(r.stdout)} vs codexir {len(want)}")
+        tally.verdict(u.stem, "differs", f"{len(ours)} vs codexir {len(want)}")
 sys.exit(tally.close())
