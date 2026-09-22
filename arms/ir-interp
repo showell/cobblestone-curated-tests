@@ -7,11 +7,7 @@ differs, so DIFFERS is an interpreter defect.
 
 codexir writes its notices to stdout and the IR to stderr (CodexIrHarness says
 why). codexrun has one output and writes both in program order, notices first,
-so it must equal codexir's stdout followed by its stderr -- less the `CX-DECK`
-lines. Those are the zig runtime's own measurement (ZigEmitter's
-`zig-p-cx-deck-report`), written to stdout each time the deck's high-water mark
-grows by another MiB: no Codex program prints them, and codexrun does not.
-They are set aside and counted.
+so it must equal codexir's stdout followed by its stderr.
 
 **codexrun writes `print-text` raw, as x86 does; codexir, built by the zig plug,
 decodes it.** So codexrun's IR arrives as CCE units, and it is decoded here
@@ -62,9 +58,7 @@ for u in C.units(d):
     if not gold.stderr.startswith((b"(chapter", b"CODEGEN-HALTED")):
         tally.verdict(u.stem, "no-oracle-ir", C.text(gold.stderr).strip()[:60])
         continue
-    lines = gold.stdout.splitlines(keepends=True)
-    deck = sum(1 for l in lines if l.startswith(b"CX-DECK "))
-    notices = b"".join(l for l in lines if not l.startswith(b"CX-DECK "))
+    notices = gold.stdout
     want = notices + gold.stderr
     r = C.run([t["rust"] / "codexrun", subject], stdin=u)
     ours = decoded(r.stdout, len(notices))
@@ -75,8 +69,7 @@ for u in C.units(d):
         tally.verdict(u.stem, "differs", "codexrun's IR carries a unit from 128")
     elif ours == want:
         halted = gold.stderr.startswith(b"CODEGEN-HALTED")
-        tally.verdict(u.stem, "agree", f"{len(gold.stderr)} bytes" + (", both halt" if halted else "")
-                      + (f", {deck} CX-DECK lines set aside" if deck else ""))
+        tally.verdict(u.stem, "agree", f"{len(gold.stderr)} bytes" + (", both halt" if halted else ""))
     else:
         tally.verdict(u.stem, "differs", f"{len(ours)} vs codexir {len(want)}")
 sys.exit(tally.close())
